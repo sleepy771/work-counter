@@ -3,77 +3,77 @@ package com.gmail.sleepy771.workcount.diff.reflection;
 import java.lang.reflect.Method;
 
 /**
- * Created by filip on 1.5.2015.
+ * Created by filip on 2.5.2015.
  */
 public class Signature {
-    private volatile int hashCode;
-    private String methodName;
-    private Class[] paramTypes;
-    private Class returnType;
 
-    public Signature(String name, Class[] paramTypes, Class returnType) {
-        this.methodName = name;
-        this.paramTypes = new Class[paramTypes.length];
-        System.arraycopy(paramTypes, 0, this.paramTypes, 0, paramTypes.length);
-        this.returnType = returnType;
-    }
+    private final String methodName;
+    private final Class[] arguments;
+    private final Class returnType;
+    private volatile int hash;
 
     public Signature(Method method) {
         this(method.getName(), method.getParameterTypes(), method.getReturnType());
     }
 
+    public Signature(String methodName, Class[] argumentTypes, Class returnType) {
+        this.methodName = methodName;
+        this.returnType = returnType;
+        this.arguments = new Class[argumentTypes.length];
+        System.arraycopy(argumentTypes, 0, arguments, 0, argumentTypes.length);
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (!o.getClass().equals(Signature.class)) {
+        if (!Signature.class.equals(o.getClass()))
             return false;
+        Signature signatureObject = (Signature) o;
+        return methodName.equals(signatureObject.methodName) &&
+                returnType.equals(signatureObject.returnType) &&
+                compareParameters(signatureObject.arguments);
+    }
+
+    private boolean compareParameters(Class[] params) {
+        if (arguments.length != params.length)
+            return false;
+        for (int k = 0; k < arguments.length; k++) {
+            if (!arguments[k].equals(params[k]))
+                return false;
         }
-        Signature other = (Signature) o;
-        return other.methodName.equals(methodName) && compareArguments(other.paramTypes) && returnType.equals(other.returnType);
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        if (hash == 0) {
+            int hashCode = 17;
+            hashCode = 31 * hashCode + methodName.hashCode();
+            hashCode = 31 * hashCode + returnType.hashCode();
+            hashCode = 31 * hashCode + computeParametersHashCode();
+            hash = hashCode;
+        }
+        return hash;
     }
 
     public String getMethodName() {
         return methodName;
     }
 
+    public Class[] getParametersType() {
+        Class[] parameters = new Class[arguments.length];
+        System.arraycopy(arguments, 0, parameters, 0, arguments.length);
+        return parameters;
+    }
+
     public Class getReturnType() {
         return returnType;
     }
 
-    public Class getArgumentType(int k) {
-        return paramTypes[k];
-    }
-
-    public Class[] getParamTypes() {
-        Class[] array = new Class[paramTypes.length];
-        System.arraycopy(paramTypes, 0, array, 0, paramTypes.length);
-        return array;
-    }
-
-    private boolean compareArguments(Class[] classes) {
-        if (classes.length != paramTypes.length)
-            return false;
-        for (int k = 0; k < this.paramTypes.length; k++) {
-            if (!classes[k].equals(paramTypes[k]))
-                return false;
+    private int computeParametersHashCode() {
+        int paramsHashCode = 17;
+        for (int k = 0; k < arguments.length; k++) {
+            paramsHashCode = paramsHashCode * 31 + arguments[k].hashCode();
         }
-        return true;
-    }
-
-    public int hashCode() {
-        if (hashCode == 0) {
-            int result = 17 * 31 + methodName.hashCode();
-            result = result * 31 + computeParamsHash();
-            result = result * 31 + returnType.hashCode();
-            hashCode = result;
-        }
-        return hashCode;
-    }
-
-    private int computeParamsHash() {
-        int argsHash = 17;
-        for (Class argumentType : paramTypes) {
-            argsHash = argsHash * 31 + argumentType.hashCode();
-        }
-        return argsHash;
+        return paramsHashCode;
     }
 }

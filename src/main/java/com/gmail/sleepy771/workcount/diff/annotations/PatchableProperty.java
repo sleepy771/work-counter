@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 
-public @interface PatchableMethod {
+public @interface PatchableProperty {
     Class<? extends Patchable> patchAs() default DefaultPatchable.class;
 }

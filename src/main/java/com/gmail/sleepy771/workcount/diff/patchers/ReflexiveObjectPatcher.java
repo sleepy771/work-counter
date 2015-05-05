@@ -2,7 +2,7 @@ package com.gmail.sleepy771.workcount.diff.patchers;
 
 import com.gmail.sleepy771.workcount.diff.DefaultPatchable;
 import com.gmail.sleepy771.workcount.diff.annotations.AutoDifferentiable;
-import com.gmail.sleepy771.workcount.diff.annotations.PatchableMethod;
+import com.gmail.sleepy771.workcount.diff.annotations.PatchableProperty;
 import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
 import com.gmail.sleepy771.workcount.diff.default_patchables.ReflexiveObjectPatchable;
 import com.gmail.sleepy771.workcount.diff.default_patches.ReflexiveObjectPatch;
@@ -50,8 +50,8 @@ public class ReflexiveObjectPatcher extends AbstractPatcher<Object, ReflexiveObj
         Method[] methods = o.getClass().getDeclaredMethods();
         Map<String, Class<?>> scheme = new HashMap<>();
         for (Method method : methods) {
-            PatchableMethod patchableMethodAnnotation;
-            if ((patchableMethodAnnotation = method.getAnnotation(PatchableMethod.class)) != null) {
+            PatchableProperty patchableMethodAnnotation;
+            if ((patchableMethodAnnotation = method.getAnnotation(PatchableProperty.class)) != null) {
                 if (method.getParameterCount() != 0) {
                     throw new IllegalArgumentException("This method is not a property");
                 }
@@ -68,36 +68,34 @@ public class ReflexiveObjectPatcher extends AbstractPatcher<Object, ReflexiveObj
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T> Patchable<T> createProxyPatchable(Class<T> patchableClass, final long id, final int version, final T object) {
+        final Map<Signature, FixedValue> methodInterceptorMap = new HashMap<>();
+        methodInterceptorMap.put(new Signature("getId", new Class[0], long.class), new FixedValue() {
+            @Override
+            public Object loadObject() throws Exception {
+                return id;
+            }
+        });
+        methodInterceptorMap.put(new Signature("getVersion", new Class[0], int.class), new FixedValue() {
+            @Override
+            public Object loadObject() throws Exception {
+                return version;
+            }
+        });
+        methodInterceptorMap.put(new Signature("getObject", new Class[0], Object.class), new FixedValue() {
+            @Override
+            public Object loadObject() throws Exception {
+                return object;
+            }
+        });
         Enhancer enhancer = new Enhancer();
         CallbackHelper helper = new CallbackHelper(patchableClass, new Class[0]) {
-            private Map<Signature, FixedValue> callbackMap = new HashMap<Signature, FixedValue>(){
-                {
-                    put(new Signature("getVersion", new Class[0], Integer.class), new FixedValue() {
-                        @Override
-                        public Object loadObject() throws Exception {
-                            return version;
-                        }
-                    });
-                    put(new Signature("getId", new Class[0], Long.class), new FixedValue() {
-                        @Override
-                        public Object loadObject() throws Exception {
-                            return id;
-                        }
-                    });
-                    put(new Signature("getObject", new Class[0], Object.class), new FixedValue() {
-                        @Override
-                        public Object loadObject() throws Exception {
-                            return object;
-                        }
-                    });
-                }
-            };
             @Override
             protected Object getCallback(Method method) {
-                Signature methodSgn = new Signature(method);
-                if (callbackMap.containsKey(methodSgn))
-                    return callbackMap.get(new Signature(method));
+                Signature signature = new Signature(method);
+                if (methodInterceptorMap.containsKey(signature))
+                    return methodInterceptorMap.get(signature);
                 return NoOp.INSTANCE;
             }
         };
