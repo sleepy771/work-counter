@@ -3,19 +3,13 @@ package com.gmail.sleepy771.workcount.diff.default_patchables;
 /**
  * Created by filip on 1.5.2015.
  */
-public class PatchableWrapper<T> implements Patchable<T> {
+public abstract class PatchableWrapper<T> implements Patchable<T> {
     @Override
-    public int getVersion() {
-        return 0;
-    }
+    public abstract int getVersion();
 
     @Override
-    public T getObject() {
-        return null;
-    }
+    public abstract T getObject();
 
     @Override
-    public long getId() {
-        return 0;
-    }
+    public abstract long getId();
 }

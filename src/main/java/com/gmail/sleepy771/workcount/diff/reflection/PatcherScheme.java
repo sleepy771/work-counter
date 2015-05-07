@@ -2,35 +2,32 @@ package com.gmail.sleepy771.workcount.diff.reflection;
 
 import com.gmail.sleepy771.workcount.diff.annotations.AutoDifferentiable;
 import com.gmail.sleepy771.workcount.diff.default_patches.Patch;
+import com.gmail.sleepy771.workcount.diff.patchers.Patcher;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by filip on 2.5.2015.
  */
 public class PatcherScheme {
 
-    List<Method> methods;
+    private final Map<Signature, Patcher> patchers;
+    private final Class patchableClass;
 
-    Class objectClass;
-
-    public Class getObjectClass() {
-        return objectClass;
+    public PatcherScheme(Class patchableClass, Map<Signature, Patcher> patchers) {
+        this.patchableClass = patchableClass;
+        this.patchers = Collections.unmodifiableMap(patchers);
     }
 
-    public void addMethod(Method m) {
-        methods.add(m);
+    public Map<Signature, Patcher> getPatchers() {
+        return patchers;
     }
 
-    public boolean isValid(Patch patch) {
-        return false;
-    }
-
-    public boolean isValid(Object object) {
-        if (object.getClass().getAnnotation(AutoDifferentiable.class) == null) {
-            throw new IllegalArgumentException("Object " + object.toString() + " is not AutoInspectable");
-        }
-        return false;
+    public Class getPatchableClass() {
+        return patchableClass;
     }
 }

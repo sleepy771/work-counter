@@ -1,63 +1,91 @@
 package com.gmail.sleepy771.workcount.diff.reflection;
 
 import com.gmail.sleepy771.workcount.diff.annotations.PatchableProperty;
-import com.gmail.sleepy771.workcount.diff.annotations.RecursiveInspect;
-import com.gmail.sleepy771.workcount.diff.default_patches.Patch;
-import com.gmail.sleepy771.workcount.diff.patchers.AbstractPatcher;
-import com.gmail.sleepy771.workcount.diff.patchers.Patcher;
-import net.sf.cglib.proxy.Enhancer;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created by filip on 2.5.2015.
+ * Created by filip on 6.5.2015.
  */
 public class ClassInspector {
 
-    private final Class clazzUnderInspection;
+    private final Class inspectedClass;
 
-    public ClassInspector(Class clazz) {
-        this.clazzUnderInspection = clazz;
+    private Map<Signature, PatchableProperty> propertyMap;
+    private Map<Signature, PatchableProperty> recursiveInspectionMap;
+    private boolean isValid;
+
+    public ClassInspector(Class inspectedClass) {
+        isValid = false;
+        propertyMap = null;
+        recursiveInspectionMap = null;
+        this.inspectedClass = inspectedClass;
     }
 
     public Class getInspectedClass() {
-        return clazzUnderInspection;
+        return inspectedClass;
     }
 
-    public boolean isInspected() {
-        return false;
+    public void runInspection() {
+        getPropertyMap();
     }
 
-    public void inspect() {
-
+    public Map<Signature, PatchableProperty> getPropertyMap() {
+        if (propertyMap == null) {
+            Map<Signature, PatchableProperty> properties = new HashMap<>();
+            for (Method method : inspectedClass.getMethods()) {
+                PatchableProperty property = method.getAnnotation(PatchableProperty.class);
+                if (property != null) {
+                    isValid = isProperty(method);
+                    properties.put(new Signature(method), property);
+                }
+            }
+            propertyMap = Collections.unmodifiableMap(properties);
+        }
+        return propertyMap;
     }
 
-    public Map<Signature, PatchableProperty> getPatchableProperties() {
-        return null;
-    }
-
-    public Map<Signature, Class> getRecursivelyInspectable() {
-        return null;
+    public Map<Signature, PatchableProperty> getRecursivePropertyMap() {
+        if (recursiveInspectionMap == null) {
+            Map<Signature, PatchableProperty> properties = new HashMap<>();
+            getPropertyMap().entrySet().stream().filter(entry -> entry.getValue().needsInspection()).forEach(entry -> properties.put(entry.getKey(), entry.getValue()));
+            recursiveInspectionMap = Collections.unmodifiableMap(properties);
+        }
+        return recursiveInspectionMap;
     }
 
     public boolean needsRecursiveInspection() {
-        return false;
+        return  getRecursivePropertyMap().size() != 0;
     }
 
     public boolean isPatchable() {
-        return false;
+        return getPropertyMap().size() != 0;
     }
 
-    public boolean validatePatcher(Class<? extends Patcher> p) {
-        return false;
+    public boolean isValid() {
+        getPropertyMap();
+        return isValid;
     }
 
-    public boolean validatePatch(Class<? extends Patch> p) {
-        return false;
+    public void validate() {
+        if (!isValid())
+            throw new IllegalArgumentException("Invalid Class");
     }
 
-    public void bindPatch(Class<? extends Patch> p) {
+    @Override
+    public int hashCode() {
+        return 17 * 31 + inspectedClass.hashCode();
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        return ClassInspector.class.equals(o.getClass()) && inspectedClass.equals(((ClassInspector) o).inspectedClass);
+    }
+
+    private boolean isProperty(Method method) {
+        return !void.class.equals(method.getReturnType()) && method.getParameterCount() == 0;
     }
 }

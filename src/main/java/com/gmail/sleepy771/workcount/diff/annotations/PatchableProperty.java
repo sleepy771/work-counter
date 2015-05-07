@@ -16,4 +16,6 @@ import java.lang.annotation.Target;
 
 public @interface PatchableProperty {
     Class<? extends Patchable> patchAs() default DefaultPatchable.class;
+
+    boolean needsInspection() default false;
 }

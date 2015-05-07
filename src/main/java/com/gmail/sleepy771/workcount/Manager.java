@@ -8,5 +8,5 @@ public interface Manager<T> {
 
     void unregister(T element);
 
-
+    boolean isRegistered(T element);
 }
