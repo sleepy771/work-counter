@@ -1,13 +1,12 @@
-package com.gmail.sleepy771.workcount.diff.example;
+package com.gmail.sleepy771.workcount.diff.sample;
 
-import com.gmail.sleepy771.workcount.diff.annotations.AutoDifferentiable;
+import com.gmail.sleepy771.workcount.diff.annotations.CanPatch;
 import com.gmail.sleepy771.workcount.diff.annotations.PatchableProperty;
-import com.gmail.sleepy771.workcount.diff.default_patchables.PatchableString;
 
 /**
  * Created by filip on 30.4.2015.
  */
-@AutoDifferentiable
+@CanPatch
 public class SimpleDiffObject {
 
     private String title;
@@ -18,12 +17,10 @@ public class SimpleDiffObject {
         this.text = text;
     }
 
-    @PatchableProperty(patchAs = PatchableString.class)
     public String getTitle() {
         return this.title;
     }
 
-    @PatchableProperty(patchAs = PatchableString.class)
     public String getText() {
         return this.text;
     }

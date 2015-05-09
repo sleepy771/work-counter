@@ -71,8 +71,8 @@ public class Signature {
 
     private int computeParametersHashCode() {
         int paramsHashCode = 17;
-        for (int k = 0; k < arguments.length; k++) {
-            paramsHashCode = paramsHashCode * 31 + arguments[k].hashCode();
+        for (Class argument : arguments) {
+            paramsHashCode = paramsHashCode * 31 + argument.hashCode();
         }
         return paramsHashCode;
     }

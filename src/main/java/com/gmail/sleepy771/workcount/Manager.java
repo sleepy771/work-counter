@@ -1,12 +1,22 @@
 package com.gmail.sleepy771.workcount;
 
+import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
+
 /**
  * Created by filip on 5.5.2015.
  */
-public interface Manager<T> {
-    void register(T element);
+public interface Manager<R, T> {
+    void register(R key, T element) throws ManagerException;
 
-    void unregister(T element);
+    void register(T element) throws ManagerException;
 
-    boolean isRegistered(T element);
+    void unregister(T element) throws ManagerException;
+
+    boolean isRegistered(T element) throws ManagerException;
+
+    boolean isRegisteredForKey(R key);
+
+    T get(R key) throws ManagerException;
+
+    T remove(R key) throws ManagerException;
 }

@@ -1,12 +1,15 @@
 package com.gmail.sleepy771.workcount.diff.default_patches;
 
+import com.gmail.sleepy771.workcount.diff.Identifiable;
+import com.gmail.sleepy771.workcount.diff.annotations.ForClass;
 import com.gmail.sleepy771.workcount.diff.numbers.NumberManager;
-import com.gmail.sleepy771.workcount.diff.default_patchables.PatchableNumber;
 
 /**
  * Created by filip on 1.5.2015.
  */
-public class NumberPatch implements Patch<PatchableNumber> {
+@ForClass(forClass = Number.class)
+@Deprecated
+public class NumberPatch implements Patch {
 
     private final Number difference;
     private final int fromVersion;
@@ -30,11 +33,6 @@ public class NumberPatch implements Patch<PatchableNumber> {
         return toVersion;
     }
 
-    @Override
-    public long getId() {
-        return id;
-    }
-
     public Number getDifference() {
         return difference;
     }
@@ -50,5 +48,10 @@ public class NumberPatch implements Patch<PatchableNumber> {
         int toVersion = Integer.parseInt(splitPatch[2]);
         Number n = NumberManager.getInstance().fromString(splitPatch[3]);
         return new NumberPatch(id, fromVersion, toVersion, n);
+    }
+
+    @Override
+    public boolean isEqual(Identifiable id) {
+        return false;
     }
 }

@@ -2,16 +2,17 @@ package com.gmail.sleepy771.workcount.diff.patchers;
 
 import com.gmail.sleepy771.workcount.diff.default_patches.Patch;
 import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
+import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 
 /**
  * Created by filip on 29.4.2015.
  */
-public interface Patcher<R, T extends Patchable<R>, P extends Patch<T>> {
-    T patch(T original, P patch);
+public interface Patcher {
+    Patchable patch(Patchable original, Patch patch);
 
-    P createPatch(T original, T altered);
+    Patch createPatch(Patchable original, Patchable altered);
 
-    P reverse(T original, P patch);
+    Patchable revert(Patchable original, Patch patch);
 
-    Class<T> getPatchableClass();
+    Patch invert(Patchable patchable, Patch patch);
 }

@@ -1,6 +1,7 @@
 package com.gmail.sleepy771.workcount.diff.default_patches;
 
-import com.gmail.sleepy771.workcount.diff.default_patchables.PatchableString;
+import com.gmail.sleepy771.workcount.diff.Identifiable;
+import com.gmail.sleepy771.workcount.diff.annotations.ForClass;
 import com.sksamuel.diffpatch.DiffMatchPatch;
 
 import java.util.LinkedList;
@@ -9,7 +10,9 @@ import java.util.List;
 /**
  * Created by filip on 1.5.2015.
  */
-public class StringPatch implements Patch<PatchableString> {
+@ForClass(forClass = String.class)
+@Deprecated
+public class StringPatch implements Patch {
 
     private final LinkedList<DiffMatchPatch.Patch> patch;
     private final int fromVersion;
@@ -33,11 +36,6 @@ public class StringPatch implements Patch<PatchableString> {
         return toVersion;
     }
 
-    @Override
-    public long getId() {
-        return forId;
-    }
-
     public LinkedList<DiffMatchPatch.Patch> getPatch() {
         return this.patch;
     }
@@ -54,5 +52,10 @@ public class StringPatch implements Patch<PatchableString> {
         int toVersion = Integer.parseInt(patch[2]);
         List<DiffMatchPatch.Patch> patches = new DiffMatchPatch().patch_fromText(patch[3]);
         return new StringPatch(forId, fromVersion, toVersion, patches);
+    }
+
+    @Override
+    public boolean isEqual(Identifiable id) {
+        return false;
     }
 }

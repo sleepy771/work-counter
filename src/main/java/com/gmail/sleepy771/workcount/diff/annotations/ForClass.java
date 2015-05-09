@@ -6,10 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by filip on 29.4.2015.
+ * Created by filip on 8.5.2015.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 
-public @interface UninspectableMethod {
+public @interface ForClass {
+    Class forClass();
 }

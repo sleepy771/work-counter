@@ -100,3 +100,5 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
+# violet_files
+*.violet.html

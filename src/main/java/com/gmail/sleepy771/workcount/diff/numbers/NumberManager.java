@@ -1,12 +1,15 @@
 package com.gmail.sleepy771.workcount.diff.numbers;
 
+import com.gmail.sleepy771.workcount.Manager;
+import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by filip on 1.5.2015.
  */
-public class NumberManager {
+public class NumberManager implements Manager<Class<? extends Number>, NumberHandler<? extends Number>>{
 
     private static NumberManager INSTANCE = null;
 
@@ -224,4 +227,38 @@ public class NumberManager {
         INSTANCE = null;
     }
 
+    @Override
+    public void register(Class<? extends Number> key, NumberHandler<? extends Number> element) throws ManagerException {
+
+    }
+
+    @Override
+    public void register(NumberHandler<? extends Number> element) {
+
+    }
+
+    @Override
+    public void unregister(NumberHandler<? extends Number> element) {
+
+    }
+
+    @Override
+    public boolean isRegistered(NumberHandler<? extends Number> element) {
+        return false;
+    }
+
+    @Override
+    public boolean isRegisteredForKey(Class<? extends Number> key) {
+        return false;
+    }
+
+    @Override
+    public NumberHandler<? extends Number> get(Class<? extends Number> key) {
+        return null;
+    }
+
+    @Override
+    public NumberHandler<? extends Number> remove(Class<? extends Number> key) {
+        return null;
+    }
 }
