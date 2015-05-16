@@ -23,9 +23,13 @@ public class Signature {
         System.arraycopy(argumentTypes, 0, arguments, 0, argumentTypes.length);
     }
 
+    public Signature(String methodName, Class returnType) {
+        this(methodName, new Class[0], returnType);
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (!Signature.class.equals(o.getClass()))
+        if (o.hashCode() != this.hashCode() || !Signature.class.equals(o.getClass()))
             return false;
         Signature signatureObject = (Signature) o;
         return methodName.equals(signatureObject.methodName) &&
