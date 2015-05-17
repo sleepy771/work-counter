@@ -14,7 +14,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
 
     public static final class Builder {
 
-        private final Map<Signature, Object> patches;
+        private Map<Signature, Object> patches;
         private Identificator id;
         private int fromVersion, toVersion;
         private Class forClass;
@@ -50,6 +50,11 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
             return this;
         }
 
+        public Builder setPatchMap(Map<Signature, Object> patches) {
+            this.patches = patches;
+            return this;
+        }
+
         public Builder removePatch(Signature signature) {
             patches.remove(signature);
             return this;
@@ -67,11 +72,6 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
 
         public Builder setPatchedClass(Class clazz) {
             this.forClass = clazz;
-            return this;
-        }
-
-        public Builder setDoNotRelease() {
-
             return this;
         }
 
@@ -150,19 +150,19 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
     }
 
     @Override
-    public Class getForClass() {
+    public final Class getForClass() {
         return forClass;
     }
 
-    public Object getPatch(Signature signature) {
+    public final Object getPatch(Signature signature) {
         return patches.get(signature);
     }
 
-    public boolean hasPatch(Signature signature) {
+    public final boolean hasPatch(Signature signature) {
         return patches.containsKey(signature);
     }
 
-    public int getSize() {
+    public final int getSize() {
         return patches.size();
     }
 
