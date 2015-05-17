@@ -1,14 +1,11 @@
 package com.gmail.sleepy771.workcount.diff.default_patches;
 
-import com.gmail.sleepy771.workcount.diff.Identifiable;
-import com.gmail.sleepy771.workcount.diff.reflection.Classy;
-
-import java.io.Serializable;
+import com.gmail.sleepy771.workcount.diff.HasID;
 
 /**
  * Created by filip on 29.4.2015.
  */
-public interface Patch extends Identifiable {
+public interface Patch extends HasID {
     int getFromVersion();
     int getToVersion();
 }

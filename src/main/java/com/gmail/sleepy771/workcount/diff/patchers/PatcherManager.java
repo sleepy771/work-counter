@@ -57,6 +57,10 @@ public class PatcherManager extends AbstractManager<Class, Patcher> implements P
     protected void populate(Map<Class, Patcher> map) {
     }
 
+    public Patch createInitialPatch(Object from, Object to) {
+        return null;
+    }
+
     @Override
     public Patchable patch(Patchable original, Patch patch) {
         return null;

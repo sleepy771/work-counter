@@ -1,6 +1,7 @@
 package com.gmail.sleepy771.workcount.diff.default_patches;
 
-import com.gmail.sleepy771.workcount.diff.Identifiable;
+import com.gmail.sleepy771.workcount.diff.HasID;
+import com.gmail.sleepy771.workcount.diff.Identificator;
 import com.gmail.sleepy771.workcount.diff.annotations.ForClass;
 import com.gmail.sleepy771.workcount.diff.numbers.NumberManager;
 
@@ -14,9 +15,9 @@ public class NumberPatch implements Patch {
     private final Number difference;
     private final int fromVersion;
     private final int toVersion;
-    private final long id;
+    private final Identificator id;
 
-    public NumberPatch(long id, int fromVersion, int toVersion, Number difference) {
+    public NumberPatch(Identificator id, int fromVersion, int toVersion, Number difference) {
         this.id = id;
         this.fromVersion = fromVersion;
         this.toVersion = toVersion;
@@ -51,7 +52,12 @@ public class NumberPatch implements Patch {
     }
 
     @Override
-    public boolean isEqual(Identifiable id) {
-        return false;
+    public Identificator getID() {
+        return this.id;
+    }
+
+    @Override
+    public boolean hasEqualID(HasID hasID) {
+        return id.isEqual(hasID.getID());
     }
 }

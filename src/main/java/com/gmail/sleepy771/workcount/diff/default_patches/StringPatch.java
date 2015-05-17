@@ -1,6 +1,7 @@
 package com.gmail.sleepy771.workcount.diff.default_patches;
 
-import com.gmail.sleepy771.workcount.diff.Identifiable;
+import com.gmail.sleepy771.workcount.diff.HasID;
+import com.gmail.sleepy771.workcount.diff.Identificator;
 import com.gmail.sleepy771.workcount.diff.annotations.ForClass;
 import com.sksamuel.diffpatch.DiffMatchPatch;
 
@@ -17,13 +18,13 @@ public class StringPatch implements Patch {
     private final LinkedList<DiffMatchPatch.Patch> patch;
     private final int fromVersion;
     private final int toVersion;
-    private final long forId;
+    private final Identificator id;
 
-    public StringPatch(long forId, int fromVersion, int toVersion, List<DiffMatchPatch.Patch> patch) {
+    public StringPatch(Identificator forId, int fromVersion, int toVersion, List<DiffMatchPatch.Patch> patch) {
         this.fromVersion = fromVersion;
         this.toVersion = toVersion;
         this.patch = new LinkedList<>(patch);
-        this.forId = forId;
+        this.id = forId;
     }
 
     @Override
@@ -55,7 +56,12 @@ public class StringPatch implements Patch {
     }
 
     @Override
-    public boolean isEqual(Identifiable id) {
-        return false;
+    public Identificator getID() {
+        return id;
+    }
+
+    @Override
+    public boolean hasEqualID(HasID hasID) {
+        return id.isEqual(hasID.getID());
     }
 }
