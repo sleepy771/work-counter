@@ -12,7 +12,6 @@ import java.util.List;
  * Created by filip on 1.5.2015.
  */
 @ForClass(forClass = String.class)
-@Deprecated
 public class StringPatch implements Patch {
 
     private final LinkedList<DiffMatchPatch.Patch> patch;

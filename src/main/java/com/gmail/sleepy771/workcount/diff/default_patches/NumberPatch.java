@@ -9,7 +9,6 @@ import com.gmail.sleepy771.workcount.diff.numbers.NumberManager;
  * Created by filip on 1.5.2015.
  */
 @ForClass(forClass = Number.class)
-@Deprecated
 public class NumberPatch implements Patch {
 
     private final Number difference;

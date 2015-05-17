@@ -7,13 +7,14 @@ import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by filip on 9.5.2015.
  */
 public interface Scheme extends Classy {
 
-    List<Signature> listMethods();
+    Set<Signature> getPatchSignatures();
 
     List<Class<? extends Patch>> listPatchClasses();
 

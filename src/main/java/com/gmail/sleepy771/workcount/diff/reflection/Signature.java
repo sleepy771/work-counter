@@ -10,21 +10,23 @@ public class Signature {
     private final String methodName;
     private final Class[] arguments;
     private final Class returnType;
+    private final Class declaringClass;
     private volatile int hash;
 
     public Signature(Method method) {
-        this(method.getName(), method.getParameterTypes(), method.getReturnType());
+        this(method.getDeclaringClass(), method.getName(), method.getParameterTypes(), method.getReturnType());
     }
 
-    public Signature(String methodName, Class[] argumentTypes, Class returnType) {
+    public Signature(Class declaringClass, String methodName, Class[] argumentTypes, Class returnType) {
         this.methodName = methodName;
         this.returnType = returnType;
         this.arguments = new Class[argumentTypes.length];
         System.arraycopy(argumentTypes, 0, arguments, 0, argumentTypes.length);
+        this.declaringClass = declaringClass;
     }
 
-    public Signature(String methodName, Class returnType) {
-        this(methodName, new Class[0], returnType);
+    public Signature(Class declaringClass, String methodName, Class returnType) {
+        this(declaringClass, methodName, new Class[0], returnType);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class Signature {
     @Override
     public int hashCode() {
         if (hash == 0) {
-            int hashCode = 17;
+            int hashCode = 31 * 17 + declaringClass.hashCode();
             hashCode = 31 * hashCode + methodName.hashCode();
             hashCode = 31 * hashCode + returnType.hashCode();
             hashCode = 31 * hashCode + computeParametersHashCode();
