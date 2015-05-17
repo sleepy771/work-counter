@@ -6,7 +6,6 @@ import com.gmail.sleepy771.workcount.diff.patchers.Patcher;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
