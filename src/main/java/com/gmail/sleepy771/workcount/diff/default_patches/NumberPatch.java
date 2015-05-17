@@ -39,16 +39,7 @@ public class NumberPatch implements Patch {
     }
 
     public String toString() {
-        return Long.toString(id) + ":" + fromVersion + ":" + toVersion + ":" + NumberManager.getInstance().asString(difference);
-    }
-
-    public static NumberPatch fromString(String representation) {
-        String[] splitPatch = representation.split(":", 3);
-        long id = Long.parseLong(splitPatch[0]);
-        int fromVersion = Integer.parseInt(splitPatch[1]);
-        int toVersion = Integer.parseInt(splitPatch[2]);
-        Number n = NumberManager.getInstance().fromString(splitPatch[3]);
-        return new NumberPatch(id, fromVersion, toVersion, n);
+        return id.toString() + ":" + fromVersion + ":" + toVersion + ":" + NumberManager.getInstance().asString(difference);
     }
 
     @Override

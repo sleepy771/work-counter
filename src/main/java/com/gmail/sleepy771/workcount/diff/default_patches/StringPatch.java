@@ -43,16 +43,7 @@ public class StringPatch implements Patch {
 
     @Override
     public String toString() {
-        return String.valueOf(forId) + ':' + fromVersion + ':' + toVersion + ':' + new DiffMatchPatch().patch_toText(patch);
-    }
-
-    public static StringPatch fromString(String patchRep) {
-        String[] patch = patchRep.split(":", 3);
-        long forId = Long.parseLong(patch[0]);
-        int fromVersion = Integer.parseInt(patch[1]);
-        int toVersion = Integer.parseInt(patch[2]);
-        List<DiffMatchPatch.Patch> patches = new DiffMatchPatch().patch_fromText(patch[3]);
-        return new StringPatch(forId, fromVersion, toVersion, patches);
+        return id.toString() + ':' + fromVersion + ':' + toVersion + ':' + new DiffMatchPatch().patch_toText(patch);
     }
 
     @Override

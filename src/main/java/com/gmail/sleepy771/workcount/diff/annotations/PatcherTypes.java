@@ -13,9 +13,9 @@ import java.lang.annotation.Target;
  * Created by filip on 5/17/15.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 
-public @interface PatchAs {
+public @interface PatcherTypes {
     Class<? extends Patchable> patchableType() default SimplePatchable.class;
 
     Class<? extends Patch> patchType();

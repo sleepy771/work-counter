@@ -1,7 +1,7 @@
 package com.gmail.sleepy771.workcount.diff.patchers;
 
 import com.gmail.sleepy771.workcount.diff.Identificator;
-import com.gmail.sleepy771.workcount.diff.annotations.PatchAs;
+import com.gmail.sleepy771.workcount.diff.annotations.PatcherTypes;
 import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
 import com.gmail.sleepy771.workcount.diff.default_patchables.SimplePatchable;
 import com.gmail.sleepy771.workcount.diff.default_patches.Patch;
@@ -14,9 +14,16 @@ import java.util.LinkedList;
 /**
  * Created by filip on 5/17/15.
  */
+@PatcherTypes(patchType = StringPatch.class)
 public class StringPatcher extends AbstractPatcher implements Patcher {
+
+    private final DiffMatchPatch dmp;
+
+    public StringPatcher() {
+        dmp = new DiffMatchPatch();
+    }
+
     @Override
-    @PatchAs(patchType = StringPatch.class)
     public Patchable patch(Patchable original, Patch patch) throws PatcherException {
         StringPatch sPatch = null;
         SimplePatchable simplePatchable = null;
@@ -30,37 +37,47 @@ public class StringPatcher extends AbstractPatcher implements Patcher {
         }
         validateIds(sPatch, simplePatchable);
         validateVersions(simplePatchable, sPatch);
-
         String patchedText = patchString(originalText, sPatch.getPatch());
-
         Identificator newId = simplePatchable.getID().makeCopy();
-
-        SimplePatchable patched = new SimplePatchable(newId, sPatch.getToVersion(), patchedText);
-
-        return null;
+        return new SimplePatchable(newId, sPatch.getToVersion(), patchedText);
     }
 
     @Override
-    @PatchAs(patchType = StringPatch.class)
-    public Patch createPatch(Patchable original, Patchable altered) {
-        return null;
+    public Patch createPatch(Patchable original, Patchable altered) throws PatcherException {
+        SimplePatchable originalPatchable;
+        SimplePatchable alteredPatchable;
+        String originalText;
+        String alteredText;
+        try {
+            originalPatchable = ((SimplePatchable) original);
+            alteredPatchable = ((SimplePatchable) altered);
+            originalText = ((String) originalPatchable.getValue());
+            alteredText = ((String) alteredPatchable.getValue());
+        } catch (ClassCastException e) {
+            throw new PatcherException(e);
+        }
+        validateIds(originalPatchable, alteredPatchable);
+        Identificator clonedId = originalPatchable.getID();
+        LinkedList<DiffMatchPatch.Patch> patches = makePatch(originalText, alteredText);
+        return new StringPatch(clonedId, originalPatchable.getVersion(), alteredPatchable.getVersion(), patches);
     }
 
     @Override
-    @PatchAs(patchType = StringPatch.class)
-    public Patchable revert(Patchable original, Patch patch) {
-        return null;
+    public Patchable revert(Patchable original, Patch patch) throws PatcherException {
+        return patch(original, invert(original, patch));
     }
 
     @Override
-    @PatchAs(patchType = StringPatch.class)
     public Patch invert(Patchable patchable, Patch patch) {
         return null;
     }
 
     private String patchString(String original, LinkedList<DiffMatchPatch.Patch> patch) {
-        DiffMatchPatch dmp = new DiffMatchPatch();
         Object[] patched = dmp.patch_apply(patch, original);
         return (String) patched[0];
+    }
+
+    private LinkedList<DiffMatchPatch.Patch> makePatch(String original, String altered) {
+        return dmp.patch_make(original, altered);
     }
 }
