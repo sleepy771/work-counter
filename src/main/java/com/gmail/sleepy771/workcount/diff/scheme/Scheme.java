@@ -6,6 +6,7 @@ import com.gmail.sleepy771.workcount.diff.patchers.Patcher;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +47,8 @@ public interface Scheme extends Classy {
     boolean hasSettableProperties();
 
     boolean hasUnsettableProperties();
+
+    Method getMethod(Signature signature) throws NoSuchMethodException;
 
     Class<? extends Patcher> getPatcherClassForMethod(Signature signature);
 

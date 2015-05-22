@@ -9,5 +9,5 @@ import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 public interface Patchable extends HasID, Classy {
     int getVersion();
 
-    Object exclude();
+    Object getValue();
 }

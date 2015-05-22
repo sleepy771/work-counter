@@ -15,6 +15,7 @@ public class SimplePatchable extends PatchableBase implements Patchable {
         this.value = value;
     }
 
+    @Override
     public Object getValue() {
         return this.value;
     }

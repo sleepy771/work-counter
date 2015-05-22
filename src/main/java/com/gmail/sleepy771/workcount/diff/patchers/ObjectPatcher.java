@@ -76,7 +76,7 @@ public class ObjectPatcher implements Patcher, Classy {
                 throw new PatcherException(e);
             }
         }
-        return (Patchable) patchedObject;
+        return new SimplePatchable(original.getID(), patch.getToVersion(), patchedObject);
     }
 
     private Patchable makePatchable(Patchable originalObject, Object value) {
@@ -88,13 +88,31 @@ public class ObjectPatcher implements Patcher, Classy {
     private Map<Signature, Object> selectByKeys(Map<Signature, Patchable> patchableMap, Set<Signature> signatureSet) {
         Map<Signature, Object> selected = new HashMap<>();
         for (Signature sgn : signatureSet) {
-            selected.put(sgn, patchableMap.get(sgn).exclude());
+            selected.put(sgn, patchableMap.get(sgn).getValue());
         }
         return selected;
     }
 
     @Override
     public Patch createPatch(Patchable original, Patchable altered) throws PatcherException {
+        scheme.isValid(original);
+        scheme.isValid(altered);
+        Map<Signature, Patch> patchMap = new HashMap<>();
+        for (Signature signature : scheme.getPatchSignatures()) {
+            try {
+                Method property = scheme.getMethod(signature);
+                Object originalValue = property.invoke(original.getValue());
+                Object alteredValue = property.invoke(altered.getValue());
+                Patcher patcher = manager.get(property.getReturnType());
+                Patch valuePatch = patcher.createPatch(new SimplePatchable(original.getID(), original.getVersion(), originalValue), new SimplePatchable(altered.getID(), altered.getVersion(), alteredValue));
+                patchMap.put(signature, valuePatch);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                scheme.invalidate();
+                throw new PatcherException(e);
+            } catch (ManagerException e) {
+                throw new PatcherException(e);
+            }
+        }
         return null;
     }
 
