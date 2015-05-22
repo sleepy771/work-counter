@@ -10,11 +10,16 @@ import java.util.*;
 /**
  * Created by filip on 5/17/15.
  */
-public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.Entry<Signature, Object>> {
+public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.Entry<Signature, Delta>> {
+
+    @Override
+    public Patch getDeltaFor(Signature signature) throws IllegalArgumentException {
+        return null;
+    }
 
     public static final class Builder {
 
-        private Map<Signature, Object> patches;
+        private Map<Signature, Delta> patches;
         private Identificator id;
         private int fromVersion, toVersion;
         private Class forClass;
@@ -140,10 +145,10 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
         }
     }
 
-    private final Map<Signature, Object> patches;
+    private final Map<Signature, Delta> patches;
     private final Class forClass;
 
-    private MapPatch(Class forClass, Identificator id, int fromVersion, int toVersion, Map<Signature, Object> patches) {
+    private MapPatch(Class forClass, Identificator id, int fromVersion, int toVersion, Map<Signature, Delta> patches) {
         super(id, fromVersion, toVersion);
         this.forClass = forClass;
         this.patches = Collections.unmodifiableMap(patches);
@@ -187,7 +192,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
 
     @Override
     protected final int computeHash(int hash) {
-        for (Map.Entry<Signature, Object> signatureObjectEntry : this) {
+        for (Map.Entry<Signature, Delta> signatureObjectEntry : this) {
             hash = 31 * hash + signatureObjectEntry.getKey().hashCode();
             hash = 31 * hash + signatureObjectEntry.getValue().hashCode();
         }
@@ -195,9 +200,9 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
     }
 
     @Override
-    public final Iterator<Map.Entry<Signature, Object>> iterator() {
+    public final Iterator<Map.Entry<Signature, Delta>> iterator() {
         return new Iterator<Map.Entry<Signature, Object>>() {
-            private final Iterator<Map.Entry<Signature, Object>> entrySetIterator = patches.entrySet().iterator();
+            private final Iterator<Map.Entry<Signature, Delta>> entrySetIterator = patches.entrySet().iterator();
             @Override
             public boolean hasNext() {
                 return entrySetIterator.hasNext();

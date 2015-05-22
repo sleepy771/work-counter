@@ -4,6 +4,7 @@ import com.gmail.sleepy771.workcount.diff.HasID;
 import com.gmail.sleepy771.workcount.diff.Identificator;
 import com.gmail.sleepy771.workcount.diff.annotations.ForClass;
 import com.gmail.sleepy771.workcount.diff.numbers.NumberManager;
+import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 
 /**
  * Created by filip on 1.5.2015.
@@ -36,6 +37,11 @@ public class NumberPatch implements Patch {
     @Override
     public int getToVersion() {
         return toVersion;
+    }
+
+    @Override
+    public Patch getDeltaFor(Signature signature) throws IllegalArgumentException {
+        return null;
     }
 
     public NumberPatchValue getDifference() {

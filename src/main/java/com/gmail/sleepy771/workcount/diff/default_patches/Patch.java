@@ -10,5 +10,6 @@ public interface Patch extends HasID {
     int getFromVersion();
     int getToVersion();
 
+    // TODO this should return only delta
     Patch getDeltaFor(Signature signature) throws IllegalArgumentException;
 }
