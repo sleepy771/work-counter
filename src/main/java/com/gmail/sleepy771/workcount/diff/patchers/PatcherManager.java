@@ -80,4 +80,19 @@ public class PatcherManager extends AbstractManager<Class, Patcher> implements P
     public Patch invert(Patchable patchable, Patch patch) {
         return null;
     }
+
+    @Override
+    public boolean isRegisteredForKey(Class key) {
+        return containsKey(key);
+    }
+
+    @Override
+    public Patcher get(Class key) throws ManagerException {
+        return getDirectly(key);
+    }
+
+    @Override
+    public Patcher remove(Class key) throws ManagerException {
+        return removeDirectly(key);
+    }
 }

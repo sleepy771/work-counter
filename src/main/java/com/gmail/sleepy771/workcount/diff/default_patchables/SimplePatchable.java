@@ -6,18 +6,13 @@ import com.gmail.sleepy771.workcount.diff.Identificator;
 /**
  * Created by filip on 5/17/15.
  */
-public class SimplePatchable implements Patchable {
+public class SimplePatchable extends PatchableBase implements Patchable {
 
-    public final int version;
-
-    public final Object value;
-
-    public final Identificator id;
+    private final Object value;
 
     public SimplePatchable(Identificator id, int version, Object value) {
+        super(id, version);
         this.value = value;
-        this.version = version;
-        this.id = id;
     }
 
     public Object getValue() {
@@ -25,17 +20,19 @@ public class SimplePatchable implements Patchable {
     }
 
     @Override
-    public int getVersion() {
-        return version;
+    public Class getForClass() {
+        return value.getClass();
     }
 
     @Override
-    public Identificator getID() {
-        return this.id;
+    protected boolean compareObject(Patchable obj) {
+        if (!SimplePatchable.class.equals(obj.getClass()))
+            return false;
+        return ((SimplePatchable) obj).getValue().equals(value);
     }
 
     @Override
-    public boolean hasEqualID(HasID hasID) {
-        return id.isEqual(hasID.getID());
+    protected int computeHashCode(int seed) {
+        return 31 * seed + value.hashCode();
     }
 }

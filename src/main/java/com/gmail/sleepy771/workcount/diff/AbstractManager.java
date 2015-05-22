@@ -3,9 +3,7 @@ package com.gmail.sleepy771.workcount.diff;
 import com.gmail.sleepy771.workcount.Manager;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by filip on 8.5.2015.
@@ -41,26 +39,38 @@ public abstract class AbstractManager<R, T> implements Manager<R, T> {
     }
 
     @Override
-    public final boolean isRegisteredForKey(R key) {
+    public Iterator<Map.Entry<R, T>> iterator() {
+        return new Iterator<Map.Entry<R, T>>() {
+            private Iterator<Map.Entry<R, T>> internalIterator = managerMap.entrySet().iterator();
+            @Override
+            public boolean hasNext() {
+                return internalIterator != null && internalIterator.hasNext();
+            }
+
+            @Override
+            public Map.Entry<R, T> next() {
+                try {
+                    if (internalIterator == null)
+                        throw new NoSuchElementException("Internal iterator was released");
+                    return internalIterator.next();
+                } finally {
+                    if (internalIterator != null && !internalIterator.hasNext())
+                        internalIterator = null;
+                }
+            }
+        };
+    }
+
+    protected final boolean containsKey(R key) {
         return managerMap.containsKey(key);
     }
 
-    @Override
-    public final T get(R key) throws ManagerException {
-        T element = managerMap.get(key);
-        if (element == null) {
-            throw new ManagerException();
-        }
-        return element;
+    protected final T getDirectly(R key) {
+        return managerMap.get(key);
     }
 
-    @Override
-    public final T remove(R key) throws ManagerException{
-        T removed = managerMap.remove(key);
-        if (removed == null) {
-            throw new ManagerException();
-        }
-        return removed;
+    protected final T removeDirectly(R key) {
+        return managerMap.remove(key);
     }
 
     protected Map<R, T> getManagerMap() {

@@ -7,6 +7,7 @@ import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,6 +17,12 @@ public interface Scheme extends Classy {
 
     Set<Signature> getPatchSignatures();
 
+    Set<Signature> getUnsettableProperties();
+
+    Set<Signature> getSettableProperties();
+
+    Map<Signature, Signature> getSetterSignatures();
+
     List<Class<? extends Patch>> listPatchClasses();
 
     List<Class<? extends Patcher>> listPatcherClasses();
@@ -24,15 +31,27 @@ public interface Scheme extends Classy {
 
     boolean hasMethod(Signature siganture);
 
+    boolean hasSetter(Signature signature);
+
     boolean isValid(Patchable patchable);
 
     boolean isValid(Patch patch);
 
     boolean isValid(Patcher patcher);
 
+    boolean onlyProperties();
+
+    boolean onlySettableProperties();
+
+    boolean hasSettableProperties();
+
+    boolean hasUnsettableProperties();
+
     Class<? extends Patcher> getPatcherClassForMethod(Signature signature);
 
     Class<? extends Patch> getPatchClassForMethod(Signature signature);
 
     Class<? extends Patchable> getPatchableClassForMethod(Signature signature);
+
+    void invalidate();
 }

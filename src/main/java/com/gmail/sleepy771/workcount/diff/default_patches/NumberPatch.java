@@ -11,16 +11,21 @@ import com.gmail.sleepy771.workcount.diff.numbers.NumberManager;
 @ForClass(forClass = Number.class)
 public class NumberPatch implements Patch {
 
-    private final Number difference;
+    private final NumberPatchValue difference;
     private final int fromVersion;
     private final int toVersion;
     private final Identificator id;
+    private volatile int hashCode;
 
-    public NumberPatch(Identificator id, int fromVersion, int toVersion, Number difference) {
+    public NumberPatch(Identificator id, int fromVersion, int toVersion, NumberPatchValue difference) {
         this.id = id;
         this.fromVersion = fromVersion;
         this.toVersion = toVersion;
         this.difference = difference;
+    }
+
+    public NumberPatch(Identificator id, int fromVersion, int toVersion, Number difference) {
+        this(id, fromVersion, toVersion, new NumberPatchValue(difference));
     }
 
     @Override
@@ -33,12 +38,12 @@ public class NumberPatch implements Patch {
         return toVersion;
     }
 
-    public Number getDifference() {
+    public NumberPatchValue getDifference() {
         return difference;
     }
 
     public String toString() {
-        return id.toString() + ":" + fromVersion + ":" + toVersion + ":" + NumberManager.getInstance().asString(difference);
+        return id.toString() + ":" + fromVersion + ":" + toVersion + ":" + NumberManager.getInstance().asString(difference.getDifference());
     }
 
     @Override
@@ -49,5 +54,18 @@ public class NumberPatch implements Patch {
     @Override
     public boolean hasEqualID(HasID hasID) {
         return id.isEqual(hasID.getID());
+    }
+
+    @Override
+    public int hashCode() {
+        if (0 == hashCode) {
+            int hash = 17;
+            hash = 31 * hash + id.hashCode();
+            hash = 31 * hash + fromVersion;
+            hash = 31 * hash + toVersion;
+            hash = 31 * hash + difference.hashCode();
+            hashCode = hash;
+        }
+        return hashCode;
     }
 }

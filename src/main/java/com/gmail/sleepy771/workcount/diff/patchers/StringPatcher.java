@@ -1,6 +1,7 @@
 package com.gmail.sleepy771.workcount.diff.patchers;
 
 import com.gmail.sleepy771.workcount.diff.Identificator;
+import com.gmail.sleepy771.workcount.diff.annotations.ForClass;
 import com.gmail.sleepy771.workcount.diff.annotations.PatcherTypes;
 import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
 import com.gmail.sleepy771.workcount.diff.default_patchables.SimplePatchable;
@@ -15,6 +16,7 @@ import java.util.LinkedList;
  * Created by filip on 5/17/15.
  */
 @PatcherTypes(patchType = StringPatch.class)
+@ForClass(forClass = String.class)
 public class StringPatcher extends AbstractPatcher implements Patcher {
 
     private final DiffMatchPatch dmp;
@@ -37,7 +39,7 @@ public class StringPatcher extends AbstractPatcher implements Patcher {
         }
         validateIds(sPatch, simplePatchable);
         validateVersions(simplePatchable, sPatch);
-        String patchedText = patchString(originalText, sPatch.getPatch());
+        String patchedText = patchString(originalText, sPatch.getPatchValue().getListOfPatches());
         Identificator newId = simplePatchable.getID().makeCopy();
         return new SimplePatchable(newId, sPatch.getToVersion(), patchedText);
     }

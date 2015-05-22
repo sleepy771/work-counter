@@ -22,4 +22,19 @@ public class PatchableManager extends AbstractManager<Class, Class<? extends Pat
     @Override
     protected void populate(Map<Class, Class<? extends Patchable>> map) {
     }
+
+    @Override
+    public final boolean isRegisteredForKey(Class key) {
+        return containsKey(key);
+    }
+
+    @Override
+    public final Class<? extends Patchable> get(Class key) throws ManagerException {
+        return getDirectly(key);
+    }
+
+    @Override
+    public final Class<? extends Patchable> remove(Class key) throws ManagerException {
+        return removeDirectly(key);
+    }
 }
