@@ -118,7 +118,7 @@ public class ObjectPatcher implements Patcher, Classy {
 
     @Override
     public Patchable revert(Patchable original, Patch patch) throws PatcherException {
-        return null;
+        return patch(original, invert(original, patch));
     }
 
     @Override

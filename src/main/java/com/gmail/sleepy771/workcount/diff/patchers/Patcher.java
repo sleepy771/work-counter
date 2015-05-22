@@ -15,5 +15,6 @@ public interface Patcher {
 
     Patchable revert(Patchable original, Patch patch) throws PatcherException;
 
+    // TODO remove patchable it seems it's not needed
     Patch invert(Patchable patchable, Patch patch) throws PatcherException;
 }
