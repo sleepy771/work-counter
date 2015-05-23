@@ -192,7 +192,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
     }
 
     @Override
-    protected boolean compareDeltas(Patch p) {
+    protected boolean hasEqualDeltas(Patch p) {
         return false;
     }
 

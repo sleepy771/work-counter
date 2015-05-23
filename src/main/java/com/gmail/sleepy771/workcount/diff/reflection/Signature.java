@@ -13,6 +13,10 @@ public class Signature {
     private final Class declaringClass;
     private volatile int hash;
 
+    public Signature(Class type) {
+        this(type, "", new Class[0], type);
+    }
+
     public Signature(Method method) {
         this(method.getDeclaringClass(), method.getName(), method.getParameterTypes(), method.getReturnType());
     }
@@ -69,6 +73,12 @@ public class Signature {
         Class[] parameters = new Class[arguments.length];
         System.arraycopy(arguments, 0, parameters, 0, arguments.length);
         return parameters;
+    }
+
+    public Method getMethod() throws NoSuchMethodException {
+        if ("".equals(methodName))
+            throw new NoSuchMethodException("Signature is for object only");
+        return declaringClass.getMethod(methodName, this.arguments);
     }
 
     public Class getReturnType() {
