@@ -4,6 +4,7 @@ import com.gmail.sleepy771.workcount.Manager;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -260,5 +261,22 @@ public class NumberManager implements Manager<Class<? extends Number>, NumberHan
     @Override
     public NumberHandler<? extends Number> remove(Class<? extends Number> key) {
         return null;
+    }
+
+    @Override
+    public Iterator<Map.Entry<Class<? extends Number>, NumberHandler<? extends Number>>> iterator() {
+        return new Iterator<Map.Entry<Class<? extends Number>, NumberHandler<? extends Number>>>() {
+            Iterator<Map.Entry<Class<? extends Number>, NumberHandler<? extends Number>>> iterator = classParsersMap.entrySet().iterator();
+
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public Map.Entry<Class<? extends Number>, NumberHandler<? extends Number>> next() {
+                return iterator.next();
+            }
+        };
     }
 }

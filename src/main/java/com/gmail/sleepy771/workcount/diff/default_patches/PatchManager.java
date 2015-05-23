@@ -12,6 +12,7 @@ import java.util.Map;
  */
 public class PatchManager extends AbstractManager<Class, Class<? extends Patch>> implements Manager<Class, Class<? extends Patch>>{
 
+
     @Override
     protected Class getKeyFromElement(Class<? extends Patch> element) throws ManagerException {
         ForClass forClass = element.getAnnotation(ForClass.class);
@@ -30,5 +31,20 @@ public class PatchManager extends AbstractManager<Class, Class<? extends Patch>>
         map.put(Long.class, NumberPatch.class);
         map.put(Double.class, NumberPatch.class);
         map.put(Float.class, NumberPatch.class);
+    }
+
+    @Override
+    public boolean isRegisteredForKey(Class key) {
+        return false;
+    }
+
+    @Override
+    public Class<? extends Patch> get(Class key) throws ManagerException {
+        return null;
+    }
+
+    @Override
+    public Class<? extends Patch> remove(Class key) throws ManagerException {
+        return null;
     }
 }

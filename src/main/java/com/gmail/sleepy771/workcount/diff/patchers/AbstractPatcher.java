@@ -10,6 +10,11 @@ import com.gmail.sleepy771.workcount.diff.exceptions.PatcherException;
  */
 public abstract class AbstractPatcher implements Patcher {
 
+    @Override
+    public Patchable revert(Patchable original, Patch patch) throws PatcherException {
+        return patch(original, invert(original, patch));
+    }
+
     protected void validateVersions(Patchable patchable, Patch patch) throws PatcherException{
         if (patch.getFromVersion() != patchable.getVersion())
             throw new PatcherException("Versions does not match. Patchable " + patchable.toString() + " version: " + patchable.getVersion() + " != Patch " + patch.toString() + " fromVersion: " + patch.getFromVersion());

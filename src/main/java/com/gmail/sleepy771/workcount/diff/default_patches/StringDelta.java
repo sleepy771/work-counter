@@ -17,7 +17,7 @@ public class StringDelta implements Delta<LinkedList<DiffMatchPatch.Patch>> {
         this.patches = patches;
     }
 
-    public LinkedList<DiffMatchPatch.Patch> getDelta() {
+    public LinkedList<DiffMatchPatch.Patch> getPatch() {
         return patches;
     }
 
@@ -50,5 +50,10 @@ public class StringDelta implements Delta<LinkedList<DiffMatchPatch.Patch>> {
         return patch1.length1 == patch2.length1 && patch1.length2 == patch2.length2
                 && patch1.start1 == patch2.start1 && patch1.start2 == patch2.start2
                 && patch1.diffs.equals(patch2.diffs);
+    }
+
+    @Override
+    public Class getForClass() {
+        return String.class;
     }
 }

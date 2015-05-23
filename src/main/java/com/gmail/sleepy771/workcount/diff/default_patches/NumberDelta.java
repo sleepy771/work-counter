@@ -11,7 +11,7 @@ public class NumberDelta implements Delta<Number> {
         this.delta = delta;
     }
 
-    public Number getDelta() {
+    public Number getPatch() {
         return null;
     }
 
@@ -21,5 +21,10 @@ public class NumberDelta implements Delta<Number> {
 
     public boolean equals(Object o) {
         return delta.equals(o);
+    }
+
+    @Override
+    public Class getForClass() {
+        return Number.class;
     }
 }

@@ -3,6 +3,7 @@ package com.gmail.sleepy771.workcount.diff.default_patches;
 import com.gmail.sleepy771.workcount.diff.HasID;
 import com.gmail.sleepy771.workcount.diff.Identificator;
 import com.gmail.sleepy771.workcount.diff.annotations.ForClass;
+import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 import com.sksamuel.diffpatch.DiffMatchPatch;
 
 import java.util.LinkedList;
@@ -14,13 +15,13 @@ import java.util.List;
 @ForClass(forClass = String.class)
 public class StringPatch implements Patch {
 
-    private final StringPatchValue patch;
+    private final StringDelta patch;
     private final int fromVersion;
     private final int toVersion;
     private final Identificator id;
     private volatile int hashCode;
 
-    public StringPatch(Identificator forId, int fromVersion, int toVersion, StringPatchValue patchValue) {
+    public StringPatch(Identificator forId, int fromVersion, int toVersion, StringDelta patchValue) {
         this.fromVersion = fromVersion;
         this.toVersion = toVersion;
         this.patch = patchValue;
@@ -28,7 +29,7 @@ public class StringPatch implements Patch {
     }
 
     public StringPatch(Identificator id, int fromVersion, int toVersion, LinkedList<DiffMatchPatch.Patch> patches) {
-        this(id, fromVersion, toVersion, new StringPatchValue(new LinkedList<>(patches)));
+        this(id, fromVersion, toVersion, new StringDelta(new LinkedList<>(patches)));
     }
 
     @Override
@@ -41,13 +42,18 @@ public class StringPatch implements Patch {
         return toVersion;
     }
 
-    public StringPatchValue getPatchValue() {
+    @Override
+    public Patch getDeltaFor(Signature signature) throws IllegalArgumentException {
+        return null;
+    }
+
+    public StringDelta getPatchValue() {
         return this.patch;
     }
 
     @Override
     public String toString() {
-        return id.toString() + ':' + fromVersion + ':' + toVersion + ':' + new DiffMatchPatch().patch_toText(patch.getListOfPatches());
+        return id.toString() + ':' + fromVersion + ':' + toVersion + ':' + new DiffMatchPatch().patch_toText(patch.getPatch());
     }
 
     @Override

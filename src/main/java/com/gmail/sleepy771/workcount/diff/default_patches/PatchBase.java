@@ -55,10 +55,10 @@ public abstract class PatchBase implements Patch {
         if (o.hashCode() != hashCode() || !Patch.class.isInstance(o))
             return false;
         Patch p = ((Patch) o);
-        return p.getFromVersion() == getFromVersion() && p.getToVersion() == getToVersion() && p.hasEqualID(this) && comparePatches(p);
+        return p.getFromVersion() == getFromVersion() && p.getToVersion() == getToVersion() && p.hasEqualID(this) && compareDeltas(p);
     }
 
-    protected abstract boolean comparePatches(Patch p);
+    protected abstract boolean compareDeltas(Patch p);
 
     protected abstract int computeHash(int initSeed);
 }

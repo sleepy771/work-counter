@@ -1,6 +1,9 @@
-package com.gmail.sleepy771.workcount.diff.default_patches;
+package com.gmail.sleepy771.workcount.diff.patchers;
 
+import com.gmail.sleepy771.workcount.diff.default_patches.Delta;
+import com.gmail.sleepy771.workcount.diff.default_patches.StringDelta;
 import com.gmail.sleepy771.workcount.diff.exceptions.PatcherException;
+import com.gmail.sleepy771.workcount.diff.patchers.DeltaPatcher;
 import com.sksamuel.diffpatch.DiffMatchPatch;
 
 import java.util.LinkedList;
@@ -8,7 +11,7 @@ import java.util.LinkedList;
 /**
  * Created by filip on 5/22/15.
  */
-public class StringDeltaPatcher implements DeltaPatcher {
+public class StringDeltaPatcher implements ClassyDeltaPatcher {
 
     private final DiffMatchPatch dmp = new DiffMatchPatch();
 

@@ -5,6 +5,10 @@ package com.gmail.sleepy771.workcount.diff.exceptions;
  */
 public class PatcherException extends Throwable {
 
+    public PatcherException() {
+        this("", null);
+    }
+
     public PatcherException(String message) {
         this(message, null);
     }
