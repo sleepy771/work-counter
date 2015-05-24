@@ -3,6 +3,7 @@ package com.gmail.sleepy771.workcount.diff.default_patches;
 import com.gmail.sleepy771.workcount.diff.Identificator;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
+import com.gmail.sleepy771.workcount.diff.scheme.Scheme;
 import com.gmail.sleepy771.workcount.diff.scheme.SchemeManager;
 
 import java.util.*;
@@ -10,13 +11,7 @@ import java.util.*;
 /**
  * Created by filip on 5/17/15.
  */
-@Deprecated
 public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.Entry<Signature, Delta>> {
-
-    @Override
-    public Delta getDeltaFor(Signature signature) throws IllegalArgumentException {
-        return null;
-    }
 
     public static final class Builder {
 
@@ -25,19 +20,19 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
         private int fromVersion, toVersion;
         private Class forClass;
 
-        private final SchemeManager manager;
+        private final Scheme manager;
 
 
-        public Builder(MapPatch patch, SchemeManager manager) {
+        public Builder(MapPatch patch, Scheme manager) {
             this(patch.getForClass(), patch.getID(), patch.getFromVersion(), patch.getToVersion(), manager);
             putPatches(patch.patches);
         }
 
-        public Builder(Class forClass, Identificator id, SchemeManager manager) {
+        public Builder(Class forClass, Identificator id, Scheme manager) {
             this(forClass, id, 0, 1, manager);
         }
 
-        public Builder(Class forClass, Identificator id, int fromVersion, int toVersion, SchemeManager manager) {
+        public Builder(Class forClass, Identificator id, int fromVersion, int toVersion, Scheme manager) {
             patches = new HashMap<>();
             this.forClass = forClass;
             this.id = id;
@@ -46,17 +41,17 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
             this.manager = manager;
         }
 
-        public Builder putPatches(Map<Signature, Object> patches) {
+        public Builder putPatches(Map<Signature, Delta> patches) {
             this.patches.putAll(patches);
             return this;
         }
 
-        public Builder putPatch(Signature signature, Object patch) {
+        public Builder putPatch(Signature signature, Delta patch) {
             patches.put(signature, patch);
             return this;
         }
 
-        public Builder setPatchMap(Map<Signature, Object> patches) {
+        public Builder setPatchMap(Map<Signature, Delta> patches) {
             this.patches = patches;
             return this;
         }
@@ -66,7 +61,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
             return this;
         }
 
-        public Builder removePatch(Signature signature, Object patchObject) {
+        public Builder removePatch(Signature signature, Delta patchObject) {
             patches.remove(signature, patchObject);
             return this;
         }
@@ -126,6 +121,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
                 validateVersions();
                 validateID();
                 validateClass();
+                validateThroughScheme();
                 return new MapPatch(forClass, id, fromVersion, toVersion, patches);
             } finally {
                 free();
@@ -160,12 +156,13 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
         return forClass;
     }
 
-    public final Object getPatch(Signature signature) {
-        return patches.get(signature);
+    public final boolean hasPatchFor(Signature signature) {
+        return patches.containsKey(signature);
     }
 
-    public final boolean hasPatch(Signature signature) {
-        return patches.containsKey(signature);
+    @Override
+    public Delta getDeltaFor(Signature signature) throws IllegalArgumentException {
+        return patches.get(signature);
     }
 
     public final int getSize() {
@@ -173,27 +170,15 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
     }
 
     @Override
-    protected final boolean comparePatches(Patch p) {
-        if (!MapPatch.class.equals(p.getClass()) || p.hashCode() != hashCode())
+    protected boolean hasEqualDeltas(Patch p) {
+        if (p.hashCode() != hashCode())
             return false;
-        MapPatch mapPatch = ((MapPatch) p);
-        if (mapPatch.getSize() != getSize())
-            return false;
-        Set<Signature> keySet = patches.keySet();
-        for (Signature signature : keySet) {
-            Object patch = patches.get(signature);
-            Object otherPatch = mapPatch.patches.get(signature);
-            if (!(patch == null ^ otherPatch == null))
-                return false;
-            if (patch != null && !patch.equals(otherPatch))
+        Set<Signature> signatures = patches.keySet();
+        for (Signature signature : signatures) {
+            if (!(p.hasPatchFor(signature) && patches.get(signature).equals(p.getDeltaFor(signature))))
                 return false;
         }
         return true;
-    }
-
-    @Override
-    protected boolean hasEqualDeltas(Patch p) {
-        return false;
     }
 
     @Override

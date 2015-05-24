@@ -17,10 +17,21 @@ public abstract class AbstractManager<R, T> implements Manager<R, T> {
     }
 
     @Override
+    //TODO make register with Collection<R> ...
     public final void register(R key, T element) throws ManagerException {
         if (managerMap.containsKey(key))
             throw new ManagerException();
-        managerMap.put(key, element);
+        if (Manager.class.isInstance(element)) {
+            Manager<R, T> managerElement = ((Manager<R, T>) element);
+            Set<R> keys = managerElement.getRegisteredKeys();
+            keys.add(key);
+            for (R elementKey : keys) {
+                if (!managerMap.containsKey(elementKey))
+                    managerMap.put(elementKey, element);
+            }
+        } else {
+            managerMap.put(key, element);
+        }
     }
 
     @Override
@@ -59,6 +70,11 @@ public abstract class AbstractManager<R, T> implements Manager<R, T> {
                 }
             }
         };
+    }
+
+    @Override
+    public Set<R> getRegisteredKeys() {
+        return managerMap.keySet();
     }
 
     protected final boolean containsKey(R key) {

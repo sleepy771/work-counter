@@ -8,7 +8,7 @@ import java.util.LinkedList;
 /**
  * Created by filip on 5/17/15.
  */
-public class StringPatchValue implements PatchValue {
+public class StringPatchValue {
 
     private final LinkedList<DiffMatchPatch.Patch> patches;
     private volatile int hashCode;

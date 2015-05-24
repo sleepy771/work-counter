@@ -11,13 +11,17 @@ import com.gmail.sleepy771.workcount.diff.exceptions.PatcherException;
 public abstract class AbstractPatcher implements Patcher {
 
     @Override
-    public Patchable revert(Patchable original, Patch patch) throws PatcherException {
-        return patch(original, invert(original, patch));
+    public final Patchable revert(Patchable original, Patch patch) throws PatcherException {
+        return patch(original, invert(patch));
     }
 
-    protected void validateVersions(Patchable patchable, Patch patch) throws PatcherException{
-        if (patch.getFromVersion() != patchable.getVersion())
-            throw new PatcherException("Versions does not match. Patchable " + patchable.toString() + " version: " + patchable.getVersion() + " != Patch " + patch.toString() + " fromVersion: " + patch.getFromVersion());
+    protected final void validateVersion(int patchableVersion, int patchVersion) throws PatcherException {
+        if (patchableVersion != patchVersion)
+            throw new PatcherException("Versions does not match. Patchable version: " + patchableVersion + " != Patch [from/to]Version: " + patchVersion);
+    }
+
+    protected void validateFromVersion(Patchable patchable, Patch patch) throws PatcherException{
+        validateVersion(patchable.getVersion(), patch.getFromVersion());
     }
 
     protected void validateIds(HasID id1, HasID id2) throws PatcherException {

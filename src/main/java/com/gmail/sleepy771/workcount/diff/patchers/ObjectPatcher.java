@@ -2,12 +2,15 @@ package com.gmail.sleepy771.workcount.diff.patchers;
 
 import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
 import com.gmail.sleepy771.workcount.diff.default_patchables.SimplePatchable;
+import com.gmail.sleepy771.workcount.diff.default_patches.Delta;
+import com.gmail.sleepy771.workcount.diff.default_patches.MapPatch;
 import com.gmail.sleepy771.workcount.diff.default_patches.Patch;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 import com.gmail.sleepy771.workcount.diff.exceptions.PatcherException;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 import com.gmail.sleepy771.workcount.diff.scheme.Scheme;
+import com.gmail.sleepy771.workcount.diff.scheme.SchemeManager;
 import net.sf.cglib.proxy.CallbackHelper;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.FixedValue;
@@ -22,30 +25,38 @@ import java.util.Set;
 /**
  * Created by filip on 5/17/15.
  */
-public class ObjectPatcher implements Patcher, Classy {
+public class ObjectPatcher extends AbstractPatcher implements Patcher, Classy {
 
     private final Scheme scheme;
 
-    private final PatcherManager manager;
+    private final DeltaPatcherManager deltaPatcher;
 
-    public ObjectPatcher(Scheme scheme, PatcherManager manager) {
+    private final PatcherManager patcherManager;
+
+    public ObjectPatcher(Scheme scheme, DeltaPatcherManager patcher, PatcherManager manager) {
         this.scheme = scheme;
-        this.manager = manager;
+        this.deltaPatcher = patcher;
+        patcherManager = manager;
     }
 
     @Override
     public Patchable patch(Patchable original, Patch patch) throws PatcherException {
         scheme.isValid(patch);
         scheme.isValid(original);
-        Map<Signature, Patchable> patchedMap = new HashMap<>();
+        validateIds(original, patch);
+        validateFromVersion(original, patch);
+        Map<Signature, Object> patchedMap = new HashMap<>();
+        Object originalObject = original.getValue();
         for (Signature signature : scheme.getPatchSignatures()) {
             try {
-                Patcher patcher = manager.get(signature.getReturnType());
                 Method property = original.getForClass().getMethod(signature.getMethodName(), signature.getParametersType());
-                Patchable patchableValue = makePatchable(original, property.invoke(original));
-                patchedMap.put(signature, patcher.patch(patchableValue, patch.getDeltaFor(signature)));
-            } catch (ManagerException e) {
-                throw new PatcherException(e);
+                Object value = property.invoke(originalObject);
+                if (deltaPatcher.isRegisteredForKey(signature.getReturnType())) {
+                    Delta delta = patch.getDeltaFor(signature);
+                    patchedMap.put(signature, deltaPatcher.patch(value, delta));
+                } else if (patcherManager.isRegisteredForKey(signature.getReturnType())) {
+
+                }
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 scheme.invalidate();
                 throw new PatcherException(e);
@@ -85,10 +96,10 @@ public class ObjectPatcher implements Patcher, Classy {
         return new SimplePatchable(originalObject.getID(), originalObject.getVersion(), value);
     }
 
-    private Map<Signature, Object> selectByKeys(Map<Signature, Patchable> patchableMap, Set<Signature> signatureSet) {
+    private Map<Signature, Object> selectByKeys(Map<Signature, Object> patchableMap, Set<Signature> signatureSet) {
         Map<Signature, Object> selected = new HashMap<>();
         for (Signature sgn : signatureSet) {
-            selected.put(sgn, patchableMap.get(sgn).getValue());
+            selected.put(sgn, patchableMap.get(sgn));
         }
         return selected;
     }
@@ -97,33 +108,39 @@ public class ObjectPatcher implements Patcher, Classy {
     public Patch createPatch(Patchable original, Patchable altered) throws PatcherException {
         scheme.isValid(original);
         scheme.isValid(altered);
-        Map<Signature, Patch> patchMap = new HashMap<>();
-        for (Signature signature : scheme.getPatchSignatures()) {
-            try {
-                Method property = scheme.getMethod(signature);
+        validateIds(original, altered);
+        Map<Signature, Delta> deltaMap = new HashMap<>();
+        try {
+            MapPatch.Builder builder = new MapPatch.Builder(original.getForClass(), original.getID(), original.getVersion(), altered.getVersion(), scheme);
+            for (Signature signature : scheme.getPatchSignatures()) {
+                Method property = signature.getMethod();
                 Object originalValue = property.invoke(original.getValue());
                 Object alteredValue = property.invoke(altered.getValue());
-                Patcher patcher = manager.get(property.getReturnType());
-                Patch valuePatch = patcher.createPatch(new SimplePatchable(original.getID(), original.getVersion(), originalValue), new SimplePatchable(altered.getID(), altered.getVersion(), alteredValue));
-                patchMap.put(signature, valuePatch);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                scheme.invalidate();
-                throw new PatcherException(e);
-            } catch (ManagerException e) {
-                throw new PatcherException(e);
+                if (!originalValue.equals(alteredValue)) {
+                    Delta delta = deltaPatcher.createDelta(originalValue, alteredValue);
+                    deltaMap.put(signature, delta);
+                }
             }
+            builder.setPatchMap(deltaMap);
+            return builder.build();
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            scheme.invalidate();
+            throw new PatcherException(e);
         }
-        return null;
     }
 
     @Override
-    public Patchable revert(Patchable original, Patch patch) throws PatcherException {
-        return patch(original, invert(original, patch));
-    }
-
-    @Override
-    public Patch invert(Patchable patchable, Patch patch) throws PatcherException {
-        return null;
+    public Patch invert(Patch patch) throws PatcherException {
+        scheme.isValid(patch);
+        MapPatch.Builder builder = new MapPatch.Builder(scheme.getForClass(), patch.getID(), scheme);
+        for (Signature signature : scheme.getPatchSignatures()) {
+            Delta patchDelta = patch.getDeltaFor(signature);
+            Delta invertedDela  = deltaPatcher.invert(patchDelta);
+            builder.putPatch(signature, invertedDela);
+        }
+        builder.setFromVersion(patch.getToVersion());
+        builder.setToVersion(patch.getFromVersion());
+        return builder.build();
     }
 
     @Override

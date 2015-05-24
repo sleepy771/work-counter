@@ -29,6 +29,11 @@ public class InstancePatch extends PatchBase implements Patch {
     }
 
     @Override
+    public boolean hasPatchFor(Signature signature) {
+        return this.signature.equals(signature);
+    }
+
+    @Override
     protected boolean hasEqualDeltas(Patch p) {
         Iterator<Map.Entry<Signature, Delta>> it1 = iterator();
         Iterator<Map.Entry<Signature, Delta>> it2 = p.iterator();
@@ -87,5 +92,10 @@ public class InstancePatch extends PatchBase implements Patch {
                 }
             }
         };
+    }
+
+    @Override
+    public Class getForClass() {
+        return signature.getReturnType();
     }
 }

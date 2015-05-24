@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Created by filip on 5/22/15.
  */
-public class CompositePatcher implements Patcher, Classy {
+public class CompositePatcher extends AbstractPatcher implements Patcher, Classy {
 
     public CompositePatcher(Class forClass, Map<Class, Patcher> patchersMap) {
 
@@ -32,12 +32,7 @@ public class CompositePatcher implements Patcher, Classy {
     }
 
     @Override
-    public Patchable revert(Patchable original, Patch patch) throws PatcherException {
-        return null;
-    }
-
-    @Override
-    public Patch invert(Patchable patchable, Patch patch) throws PatcherException {
+    public Patch invert(Patch patch) throws PatcherException {
         return null;
     }
 }

@@ -8,6 +8,7 @@ import com.gmail.sleepy771.workcount.diff.default_patchables.PatchableManager;
 import com.gmail.sleepy771.workcount.diff.default_patches.Patch;
 import com.gmail.sleepy771.workcount.diff.default_patches.PatchManager;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
+import com.gmail.sleepy771.workcount.diff.exceptions.PatcherException;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 
 import java.util.List;
@@ -77,7 +78,7 @@ public class PatcherManager extends AbstractManager<Class, Patcher> implements P
     }
 
     @Override
-    public Patch invert(Patchable patchable, Patch patch) {
+    public Patch invert(Patch patch) throws PatcherException {
         return null;
     }
 

@@ -2,7 +2,6 @@ package com.gmail.sleepy771.workcount.diff.patchers;
 
 import com.gmail.sleepy771.workcount.diff.default_patches.Delta;
 import com.gmail.sleepy771.workcount.diff.default_patches.NumberDelta;
-import com.gmail.sleepy771.workcount.diff.default_patches.StringDelta;
 import com.gmail.sleepy771.workcount.diff.exceptions.PatcherException;
 import com.gmail.sleepy771.workcount.diff.numbers.NumberManager;
 

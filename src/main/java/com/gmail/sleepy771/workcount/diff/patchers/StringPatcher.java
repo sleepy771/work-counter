@@ -17,6 +17,7 @@ import java.util.LinkedList;
  */
 @PatcherTypes(patchType = StringPatch.class)
 @ForClass(forClass = String.class)
+@Deprecated
 public class StringPatcher extends AbstractPatcher implements Patcher {
 
     private final DiffMatchPatch dmp;
@@ -38,8 +39,8 @@ public class StringPatcher extends AbstractPatcher implements Patcher {
             throw new PatcherException(e);
         }
         validateIds(sPatch, simplePatchable);
-        validateVersions(simplePatchable, sPatch);
-        String patchedText = patchString(originalText, sPatch.getPatchValue().getListOfPatches());
+        validateFromVersion(simplePatchable, sPatch);
+        String patchedText = patchString(originalText, sPatch.getPatchValue().getPatch());
         Identificator newId = simplePatchable.getID().makeCopy();
         return new SimplePatchable(newId, sPatch.getToVersion(), patchedText);
     }
@@ -65,12 +66,7 @@ public class StringPatcher extends AbstractPatcher implements Patcher {
     }
 
     @Override
-    public Patchable revert(Patchable original, Patch patch) throws PatcherException {
-        return patch(original, invert(original, patch));
-    }
-
-    @Override
-    public Patch invert(Patchable patchable, Patch patch) {
+    public Patch invert(Patch patch) {
         return null;
     }
 

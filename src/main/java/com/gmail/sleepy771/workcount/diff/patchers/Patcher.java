@@ -5,6 +5,8 @@ import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
 import com.gmail.sleepy771.workcount.diff.exceptions.PatcherException;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 
+import java.util.Set;
+
 /**
  * Created by filip on 29.4.2015.
  */
@@ -16,5 +18,5 @@ public interface Patcher {
     Patchable revert(Patchable original, Patch patch) throws PatcherException;
 
     // TODO remove patchable it seems it's not needed
-    Patch invert(Patchable patchable, Patch patch) throws PatcherException;
+    Patch invert(Patch patch) throws PatcherException;
 }
