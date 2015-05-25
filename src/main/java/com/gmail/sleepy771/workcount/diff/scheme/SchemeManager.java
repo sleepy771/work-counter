@@ -39,4 +39,19 @@ public class SchemeManager extends AbstractManager<Class, Scheme> implements Man
     @Override
     protected void populate(Map<Class, Scheme> map) {
     }
+
+    @Override
+    public boolean isRegisteredForKey(Class key) {
+        return containsKey(key);
+    }
+
+    @Override
+    public Scheme get(Class key) throws ManagerException {
+        return getDirectly(key);
+    }
+
+    @Override
+    public Scheme remove(Class key) throws ManagerException {
+        return removeDirectly(key);
+    }
 }

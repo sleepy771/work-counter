@@ -6,6 +6,9 @@ import com.gmail.sleepy771.workcount.diff.annotations.ForClass;
 import com.gmail.sleepy771.workcount.diff.numbers.NumberManager;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * Created by filip on 1.5.2015.
  */
@@ -44,8 +47,14 @@ public class NumberPatch implements Patch {
         return null;
     }
 
-    public NumberPatchValue getDifference() {
-        return difference;
+    @Override
+    public boolean hasDeltaFor(Signature signature) {
+        return false;
+    }
+
+    @Override
+    public boolean isPatch(Signature signature) {
+        return false;
     }
 
     public String toString() {
@@ -73,5 +82,20 @@ public class NumberPatch implements Patch {
             hashCode = hash;
         }
         return hashCode;
+    }
+
+    @Override
+    public Object getPatch() {
+        return null;
+    }
+
+    @Override
+    public Class getForClass() {
+        return null;
+    }
+
+    @Override
+    public Iterator<Map.Entry<Signature, Delta>> iterator() {
+        return null;
     }
 }

@@ -7,9 +7,9 @@ import com.gmail.sleepy771.workcount.diff.reflection.Classy;
  */
 public interface PatchableInspector extends Classy {
 
-    public void runInspection();
+    void runInspection();
 
-    public boolean isInspected();
+    boolean isInspected();
 
-    public boolean isValid();
+    boolean isValid();
 }

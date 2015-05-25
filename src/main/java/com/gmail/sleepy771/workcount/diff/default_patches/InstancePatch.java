@@ -29,7 +29,7 @@ public class InstancePatch extends PatchBase implements Patch {
     }
 
     @Override
-    public boolean hasPatchFor(Signature signature) {
+    public boolean hasDeltaFor(Signature signature) {
         return this.signature.equals(signature);
     }
 

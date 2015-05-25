@@ -4,7 +4,6 @@ import com.gmail.sleepy771.workcount.diff.Identificator;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 import com.gmail.sleepy771.workcount.diff.scheme.Scheme;
-import com.gmail.sleepy771.workcount.diff.scheme.SchemeManager;
 
 import java.util.*;
 
@@ -12,6 +11,11 @@ import java.util.*;
  * Created by filip on 5/17/15.
  */
 public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.Entry<Signature, Delta>> {
+
+    @Override
+    public Object getPatch() {
+        return null;
+    }
 
     public static final class Builder {
 
@@ -156,8 +160,13 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
         return forClass;
     }
 
-    public final boolean hasPatchFor(Signature signature) {
+    public final boolean hasDeltaFor(Signature signature) {
         return patches.containsKey(signature);
+    }
+
+    @Override
+    public boolean isPatch(Signature signature) {
+        return false;
     }
 
     @Override
@@ -175,7 +184,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
             return false;
         Set<Signature> signatures = patches.keySet();
         for (Signature signature : signatures) {
-            if (!(p.hasPatchFor(signature) && patches.get(signature).equals(p.getDeltaFor(signature))))
+            if (!(p.hasDeltaFor(signature) && patches.get(signature).equals(p.getDeltaFor(signature))))
                 return false;
         }
         return true;

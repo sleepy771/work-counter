@@ -9,12 +9,14 @@ import java.util.Map;
 /**
  * Created by filip on 29.4.2015.
  */
-public interface Patch extends HasID, Iterable<Map.Entry<Signature, Delta>>, Classy {
+public interface Patch extends HasID, Iterable<Map.Entry<Signature, Delta>>, Classy, Delta {
     int getFromVersion();
     int getToVersion();
 
     // TODO this should return only delta
     Delta getDeltaFor(Signature signature) throws IllegalArgumentException;
 
-    boolean hasPatchFor(Signature signature);
+    boolean hasDeltaFor(Signature signature);
+
+    boolean isPatch(Signature signature);
 }

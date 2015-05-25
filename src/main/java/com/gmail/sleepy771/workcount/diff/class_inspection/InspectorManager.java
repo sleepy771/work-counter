@@ -2,6 +2,7 @@ package com.gmail.sleepy771.workcount.diff.class_inspection;
 
 import com.gmail.sleepy771.workcount.Manager;
 import com.gmail.sleepy771.workcount.diff.AbstractManager;
+import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 
 import java.util.Map;
 
@@ -16,5 +17,20 @@ public class InspectorManager extends AbstractManager<Class, PatchableInspector>
 
     @Override
     protected void populate(Map<Class, PatchableInspector> map) {
+    }
+
+    @Override
+    public boolean isRegisteredForKey(Class key) {
+        return false;
+    }
+
+    @Override
+    public PatchableInspector get(Class key) throws ManagerException {
+        return null;
+    }
+
+    @Override
+    public PatchableInspector remove(Class key) throws ManagerException {
+        return null;
     }
 }

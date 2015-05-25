@@ -10,7 +10,6 @@ import com.gmail.sleepy771.workcount.diff.exceptions.PatcherException;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 import com.gmail.sleepy771.workcount.diff.scheme.Scheme;
-import com.gmail.sleepy771.workcount.diff.scheme.SchemeManager;
 import net.sf.cglib.proxy.CallbackHelper;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.FixedValue;
@@ -29,13 +28,13 @@ public class ObjectPatcher extends AbstractPatcher implements Patcher, Classy {
 
     private final Scheme scheme;
 
-    private final DeltaPatcherManager deltaPatcher;
+    private final DeltaPatcherManager deltaPatcherManager;
 
     private final PatcherManager patcherManager;
 
     public ObjectPatcher(Scheme scheme, DeltaPatcherManager patcher, PatcherManager manager) {
         this.scheme = scheme;
-        this.deltaPatcher = patcher;
+        this.deltaPatcherManager = patcher;
         patcherManager = manager;
     }
 
@@ -51,22 +50,35 @@ public class ObjectPatcher extends AbstractPatcher implements Patcher, Classy {
             try {
                 Method property = original.getForClass().getMethod(signature.getMethodName(), signature.getParametersType());
                 Object value = property.invoke(originalObject);
-                if (deltaPatcher.isRegisteredForKey(signature.getReturnType())) {
-                    Delta delta = patch.getDeltaFor(signature);
-                    patchedMap.put(signature, deltaPatcher.patch(value, delta));
-                } else if (patcherManager.isRegisteredForKey(signature.getReturnType())) {
-
+                if (patch.hasDeltaFor(signature)) {
+                    if (patch.isPatch(signature)) {
+                        if (!patcherManager.isRegisteredForKey(signature.getReturnType())) {
+                            // atempt to run ClassInspector
+                        }
+                        Patcher patcher = patcherManager.get(signature.getReturnType());
+                        Patchable originalInnerObjectPatchable = new SimplePatchable(original.getID(), original.getVersion(), value);
+                        Patch innerObjectPatch = (Patch) patch.getDeltaFor(signature);
+                        Patchable patchedInnerObjectPatchable = patcher.patch(originalInnerObjectPatchable, innerObjectPatch);
+                        patchedMap.put(signature, patchedInnerObjectPatchable.getValue());
+                    } else {
+                        DeltaPatcher deltaPatcher = deltaPatcherManager.get(signature.getReturnType());
+                        Delta delta = patch.getDeltaFor(signature);
+                        Object patchedInnerObject = deltaPatcher.patch(value, delta);
+                        patchedMap.put(signature, patchedInnerObject);
+                    }
                 }
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 scheme.invalidate();
                 throw new PatcherException(e);
+            } catch (ManagerException e) {
+                throw new PatcherException(e);
             }
         }
-        Object patchedObject = null;
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(original.getForClass());
         CallbackHelper helper = new CallbackHelper(original.getForClass(), new Class[0]) {
             private Map<Signature, Object> excluded = selectByKeys(patchedMap, scheme.getUnsettableProperties());
+
             @Override
             protected Object getCallback(Method method) {
                 Signature methodSignature = new Signature(method);
@@ -77,7 +89,7 @@ public class ObjectPatcher extends AbstractPatcher implements Patcher, Classy {
         };
         enhancer.setCallbackFilter(helper);
         enhancer.setCallbacks(helper.getCallbacks());
-        patchedObject = enhancer.create();
+        Object patchedObject = enhancer.create();
         for (Map.Entry<Signature, Signature> setterToProperty : scheme.getSetterSignatures().entrySet()) {
             try {
                 Method setter = scheme.getForClass().getMethod(setterToProperty.getKey().getMethodName(), setterToProperty.getKey().getParametersType());
@@ -117,7 +129,7 @@ public class ObjectPatcher extends AbstractPatcher implements Patcher, Classy {
                 Object originalValue = property.invoke(original.getValue());
                 Object alteredValue = property.invoke(altered.getValue());
                 if (!originalValue.equals(alteredValue)) {
-                    Delta delta = deltaPatcher.createDelta(originalValue, alteredValue);
+                    Delta delta = deltaPatcherManager.createDelta(originalValue, alteredValue);
                     deltaMap.put(signature, delta);
                 }
             }
@@ -135,7 +147,7 @@ public class ObjectPatcher extends AbstractPatcher implements Patcher, Classy {
         MapPatch.Builder builder = new MapPatch.Builder(scheme.getForClass(), patch.getID(), scheme);
         for (Signature signature : scheme.getPatchSignatures()) {
             Delta patchDelta = patch.getDeltaFor(signature);
-            Delta invertedDela  = deltaPatcher.invert(patchDelta);
+            Delta invertedDela = deltaPatcherManager.invert(patchDelta);
             builder.putPatch(signature, invertedDela);
         }
         builder.setFromVersion(patch.getToVersion());
