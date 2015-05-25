@@ -5,6 +5,10 @@
         <class import="java.lang.Boolean" as="Boolean"/>
         <instance class="NumberManager" obtain-instance="getInstance" as="nm"/>
     </instances>
+    <inherit amount="some,all,none" from="path/to/parent/defaults.xml">
+        <include-class class="com.gmail.sleepy771.workcount.diff.sample.SimpleDiffObject" /> <!-- usable with #some, #none -->
+        <exclude-class class="java.util.HashMap"/> <!-- usable only with #all -->
+    </inherit>
     <define>
         <for-class value="java.lang.String">
             <parameter-types>
@@ -71,4 +75,14 @@
             </values>
         </for-class>
     </define>
+    <override>
+        <for-class value="java.util.List">
+            <parameter-types>
+                <parameter-type>java.lang.String</parameter-type>
+            </parameter-types>
+            <values>
+                <value>defualt</value>
+            </values>
+        </for-class>
+    </override>
 </defualtvalues>

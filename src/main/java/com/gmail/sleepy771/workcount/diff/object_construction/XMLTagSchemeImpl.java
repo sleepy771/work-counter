@@ -15,23 +15,34 @@ public class XMLTagSchemeImpl extends DefaultAbstractManager<String, XMLTagSchem
     private final int level;
     private final XMLAttributeManager attributeManager;
     private final XMLExecutable executor;
+    private final boolean pairTag;
 
-    public XMLTagSchemeImpl(String name, int level, boolean obligatory, XMLAttributeManager attributeManager, XMLExecutable executable) {
+    public XMLTagSchemeImpl(String name, int level, boolean obligatory, boolean pairTag, XMLAttributeManager attributeManager, XMLExecutable executable) {
         this.tagName = name;
         this.level = level;
         this.obligatory = obligatory;
         this.attributeManager = attributeManager;
         this.executor = executable;
+        this.pairTag = pairTag;
+    }
+
+    public XMLTagSchemeImpl(String name, int level, boolean obligatory, boolean pairTag, XMLExecutable executable) {
+        this(name, level, obligatory, pairTag, new XMLAttributeManagerImpl(), executable);
     }
 
     public XMLTagSchemeImpl(String name, int level, boolean obligatory, XMLExecutable executable) {
-        this(name, level, obligatory, new XMLAttributeManagerImpl(), executable);
+        this(name, level, obligatory, true, new XMLAttributeManagerImpl(), executable);
     }
 
 
     @Override
     public final Set<String> getPossibleTags() {
         return getRegisteredKeys();
+    }
+
+    @Override
+    public boolean isPairTag() {
+        return false;
     }
 
     @Override

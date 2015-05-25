@@ -11,5 +11,9 @@ public interface XMLAttributeScheme extends HasName {
 
     Set<String> getPossibleAttributeValues();
 
+    boolean isValidAttributeValue(String attribueValue);
+
+    boolean hasRestrictedValues();
+
     boolean isObligatory();
 }

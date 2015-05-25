@@ -1,5 +1,6 @@
 package com.gmail.sleepy771.workcount.diff.object_construction;
 
+import com.gmail.sleepy771.workcount.diff.default_patches.StringDelta;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 
 import java.util.ArrayList;
@@ -13,32 +14,34 @@ import java.util.List;
 public class XMLHandler {
 
     public enum Tag {
-        DEFAULT_VALUES("default-values", 0, true, null),
-        INSTANCES("instances", 1, false, DEFAULT_VALUES),
-        DEFINE("define", 1, true, DEFAULT_VALUES),
-        OVERRIDE("override", 1, false, DEFAULT_VALUES),
-        INHERIT("inherit", 1, false, DEFAULT_VALUES),
-        CLASS("class", 2, false, INSTANCES),
-        INSTANCE("instance", 2, false, INSTANCES),
-        FOR_CLASS("for-class", 2, true, DEFINE),
-        FOR_CLASS_OVERRIDE("for-class", 2, true, OVERRIDE),
-        EXCLUDE_INHERIT("exclude-class", 2, false, INHERIT),
-        INCLUDE_INHERIT("include-class", 2, false, INHERIT),
-        VALUES("values", 3, true, FOR_CLASS),
-        VALUES_OVERRIDE("values", 3, true, FOR_CLASS_OVERRIDE),
-        VALUE("value", 4, true, VALUES),
-        VALUE_OVERRIDE("value", 4, true, VALUES_OVERRIDE);
+        DEFAULT_VALUES("default-values", 0, true, true, null),
+        INSTANCES("instances", 1, false, true, DEFAULT_VALUES),
+        DEFINE("define", 1, true, true, DEFAULT_VALUES),
+        OVERRIDE("override", 1, false, true, DEFAULT_VALUES),
+        INHERIT("inherit", 1, false, true, DEFAULT_VALUES),
+        CLASS("class", 2, false, false, INSTANCES),
+        INSTANCE("instance", 2, false, false, INSTANCES),
+        FOR_CLASS("for-class", 2, true, true, DEFINE),
+        FOR_CLASS_OVERRIDE("for-class", 2, true, true, OVERRIDE),
+        EXCLUDE_INHERIT("exclude-class", 2, false, true, INHERIT),
+        INCLUDE_INHERIT("include-class", 2, false, true, INHERIT),
+        VALUES("values", 3, true, true, FOR_CLASS),
+        VALUES_OVERRIDE("values", 3, true, true, FOR_CLASS_OVERRIDE),
+        VALUE("value", 4, true, true, VALUES),
+        VALUE_OVERRIDE("value", 4, true, true, VALUES_OVERRIDE);
 
         private final String name;
         private final int level;
         private final boolean obligatory;
+        private final boolean pairTag;
         private final Tag parent;
 
-        Tag(String name, int level, boolean obligatory, Tag parent) {
+        Tag(String name, int level, boolean obligatory, boolean pairTag, Tag parent) {
             this.name = name;
             this.level = level;
             this.obligatory = obligatory;
             this.parent = parent;
+            this.pairTag = pairTag;
         }
 
         public List<Tag> getBackTrace() {
@@ -81,6 +84,14 @@ public class XMLHandler {
             return namesList;
         }
 
+        public boolean isRoot() {
+            return parent == null;
+        }
+
+        public boolean isPairTag() {
+            return pairTag;
+        }
+
         public int getLevel() {
             return level;
         }
@@ -114,6 +125,57 @@ public class XMLHandler {
             }
             return tagList;
         }
+    }
+
+    public enum Attribute {
+        IMPORT("import", true, Tag.CLASS, "-"),
+        AS("as", true, Tag.CLASS, "-"),
+        CLASS("class", true, Tag.INSTANCE, "-"),
+        OBTAIN_INSTANCE("obtain-instance", true, Tag.INSTANCE, "-"),
+        AS_INSTANCE_NAME("as", true, Tag.INSTANCE, "-"),
+        INHERIT_AMOUNT("amount", false, Tag.INHERIT, "some,none,all"),
+        INHERIT_FROM("from", true, Tag.INHERIT, "-"),
+        INCLUDE_CLASS("class", true, Tag.INCLUDE_INHERIT, "-"),
+        EXCLUDE_CLASS("class", true, Tag.EXCLUDE_INHERIT, "-"),
+        DEFINE_FOR_CLASS_VALUE("value", true, Tag.FOR_CLASS, "-"),
+        DEFINE_VALUE_CLASS_INSTANCE("class-instance", false, Tag.VALUE, "-"),
+        DEFINE_VALUE_INVOKE("invoke", false, Tag.VALUE, "-"),
+        OVERRIDE_FOR_CLASS_VALUE("value", true, Tag.FOR_CLASS_OVERRIDE, "-"),
+        OVERRIDE_VALUE_CLASS_INSTANCE("class-instance", false, Tag.VALUE_OVERRIDE, "-"),
+        OVERRIDE_VALUE_INVOKE("invoke", false, Tag.VALUE_OVERRIDE, "-");
+
+        private final String attributeName;
+        private final boolean obligatory;
+        private final Tag forTag;
+        private final String possibleAttributes;
+
+        Attribute(String attributeName, boolean obligatory, Tag forTag, String possibleAttributes) {
+            this.attributeName = attributeName;
+            this.forTag = forTag;
+            this.obligatory = obligatory;
+            this.possibleAttributes = possibleAttributes.trim();
+        }
+
+        public String getAttributeName() {
+            return attributeName;
+        }
+
+        public boolean isObligatory() {
+            return obligatory;
+        }
+
+        public boolean isRestricted() {
+            return !(null == possibleAttributes || possibleAttributes.isEmpty() || "-".equals(possibleAttributes));
+        }
+
+        public String getPossibleAttributes() {
+            return possibleAttributes;
+        }
+
+        public String[] getPossibleAttributesArray() {
+            return !isRestricted() ? new String[0] : possibleAttributes.split("\\s*,\\s*");
+        }
+
     }
 
     private final XMLTagScheme defaultValuesTag = new XMLTagSchemeImpl("default-values", 0, true, null);
@@ -155,8 +217,11 @@ public class XMLHandler {
         valuesScheme.register(valueScheme);
     }
 
-    public void registrateAttributes() throws ManagerException {
-        getByBackTraceTagByName(Tag.INSTANCES).getAttributeManager().register();
+    public void registerAttributes() throws ManagerException {
+        for (Attribute attribute : Attribute.values()) {
+            XMLAttributeScheme scheme = createAttribute(attribute);
+            getByBackTraceTagByName(attribute.forTag).getAttributeManager().register(scheme);
+        }
     }
 
     @Deprecated
@@ -187,6 +252,10 @@ public class XMLHandler {
     }
 
     public static XMLTagScheme createScheme(Tag tag, XMLExecutable executable) {
-        return new XMLTagSchemeImpl(tag.name, tag.level, tag.obligatory, executable);
+        return new XMLTagSchemeImpl(tag.name, tag.level, tag.obligatory, tag.pairTag, executable);
+    }
+
+    public static XMLAttributeScheme createAttribute(Attribute attribute) {
+        return new XMLAttributeSchemeImpl(attribute.attributeName, attribute.obligatory, attribute.possibleAttributes);
     }
 }

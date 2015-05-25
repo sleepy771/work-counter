@@ -14,6 +14,8 @@ public interface XMLTagScheme extends HasName, XMLExecutable, XMLTagSchemeManage
 
     int getTagLevel();
 
+    boolean isPairTag();
+
     XMLAttributeManager getAttributeManager();
 
     boolean isValid(XMLTag tag);
