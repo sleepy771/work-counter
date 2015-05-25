@@ -1,11 +1,10 @@
 package com.gmail.sleepy771.workcount.diff.object_construction;
 
-import com.gmail.sleepy771.workcount.diff.default_patches.StringDelta;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.LinkedList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -178,64 +177,48 @@ public class XMLHandler {
 
     }
 
-    private final XMLTagScheme defaultValuesTag = new XMLTagSchemeImpl("default-values", 0, true, null);
+    private final XMLTagScheme defaultValuesTag = createScheme(Tag.DEFAULT_VALUES, null);
 
-    void performRegistration() throws ManagerException {
-        XMLTagScheme instancesScheme = createScheme(Tag.INSTANCES, null);
-        XMLTagScheme defineScheme = createScheme(Tag.DEFINE, null);
-        XMLTagScheme overrideScheme = createScheme(Tag.OVERRIDE, null);
-        XMLTagScheme inheritScheme = createScheme(Tag.INHERIT, null);
-        defaultValuesTag.register(instancesScheme);
-        defaultValuesTag.register(defineScheme);
-        defaultValuesTag.register(overrideScheme);
-        defaultValuesTag.register(inheritScheme);
-
-        // instances
-        XMLTagScheme classScheme = createScheme(Tag.CLASS, null);
-        XMLTagScheme instanceScheme = createScheme(Tag.INSTANCE, null);
-        instancesScheme.register(classScheme);
-        inheritScheme.register(instanceScheme);
-
-        // define
-        XMLTagScheme forClassScheme = createScheme(Tag.FOR_CLASS, null);
-        defineScheme.register(forClassScheme);
-
-        // override
-        overrideScheme.register(forClassScheme);
-
-        // inherit
-        XMLTagScheme excludeInherit = createScheme(Tag.EXCLUDE_INHERIT, null);
-        XMLTagScheme includeInherit = createScheme(Tag.INCLUDE_INHERIT, null);
-        inheritScheme.register(excludeInherit);
-        inheritScheme.register(includeInherit);
-
-        // for-class
-        XMLTagScheme valuesScheme = createScheme(Tag.VALUES, null);
-        forClassScheme.register(valuesScheme);
-
-        XMLTagScheme valueScheme = createScheme(Tag.VALUE, null);
-        valuesScheme.register(valueScheme);
+    // TODO suppress this exception
+    public XMLHandler() throws ManagerException {
+        registerTags();
+        registerAttributes();
     }
 
-    public void registerAttributes() throws ManagerException {
-        for (Attribute attribute : Attribute.values()) {
-            XMLAttributeScheme scheme = createAttribute(attribute);
-            getByBackTraceTagByName(attribute.forTag).getAttributeManager().register(scheme);
+    private void registerTags() throws ManagerException {
+        List<Tag> sortedList = new ArrayList<>(Arrays.asList(Tag.values()));
+        sortedList.sort(new Comparator<Tag>() {
+            @Override
+            public int compare(Tag o1, Tag o2) {
+                return o1.level - o2.level;
+            }
+        });
+        for (Tag tag : sortedList) {
+            if (null != tag.parent) {
+                XMLTagScheme scheme = createScheme(tag, null);
+                getSchemeByTagWithoutRoot(tag.parent).register(scheme);
+            }
         }
     }
 
-    @Deprecated
-    public XMLTagScheme getByBackTrace(List<Tag> backTrace) throws ManagerException {
+    private void registerAttributes() throws ManagerException {
+        for (Attribute attribute : Attribute.values()) {
+            XMLAttributeScheme scheme = createAttribute(attribute);
+            getSchemeByTagWithoutRoot(attribute.forTag).getAttributeManager().register(scheme);
+        }
+    }
+
+    public XMLTagScheme getByTagBackTraceWithRoot(List<Tag> backTrace) throws ManagerException {
         XMLTagScheme scheme = defaultValuesTag;
         for (Tag tag : backTrace) {
-            if (!tag.name.equals(scheme.getName())) {
+            if (!tag.name.equals(defaultValuesTag.getName())) {
                 scheme = scheme.get(tag.name);
             }
         }
         return scheme;
     }
 
-    public XMLTagScheme getByBackTraceWithoutName(List<String> backTrace) throws ManagerException {
+    public XMLTagScheme geSchemeByNameWithoutRoot(List<String> backTrace) throws ManagerException {
         XMLTagScheme scheme = defaultValuesTag;
         for (String tagName : backTrace) {
             scheme = scheme.get(tagName);
@@ -243,12 +226,12 @@ public class XMLHandler {
         return scheme;
     }
 
-    public XMLTagScheme getByBackTraceTag(Tag child) throws ManagerException {
-        return getByBackTrace(child.getBackTrace());
+    public XMLTagScheme getByTagWithRoot(Tag child) throws ManagerException {
+        return getByTagBackTraceWithRoot(child.getBackTrace());
     }
 
-    public XMLTagScheme getByBackTraceTagByName(Tag child) throws ManagerException {
-        return getByBackTraceWithoutName(child.getNameBackTraceWithoutRoot());
+    public XMLTagScheme getSchemeByTagWithoutRoot(Tag child) throws ManagerException {
+        return geSchemeByNameWithoutRoot(child.getNameBackTraceWithoutRoot());
     }
 
     public static XMLTagScheme createScheme(Tag tag, XMLExecutable executable) {
