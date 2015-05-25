@@ -6,6 +6,7 @@ import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by filip on 1.5.2015.
@@ -260,6 +261,11 @@ public class NumberManager implements Manager<Class<? extends Number>, NumberHan
 
     @Override
     public NumberHandler<? extends Number> remove(Class<? extends Number> key) {
+        return null;
+    }
+
+    @Override
+    public Set<Class<? extends Number>> getRegisteredKeys() {
         return null;
     }
 

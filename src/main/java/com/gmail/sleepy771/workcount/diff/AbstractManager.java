@@ -73,7 +73,7 @@ public abstract class AbstractManager<R, T> implements Manager<R, T> {
     }
 
     @Override
-    public Set<R> getRegisteredKeys() {
+    public final Set<R> getRegisteredKeys() {
         return managerMap.keySet();
     }
 

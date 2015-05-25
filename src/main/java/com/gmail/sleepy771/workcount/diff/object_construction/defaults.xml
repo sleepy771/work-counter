@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<defualtvalues>
+    <instances>
+        <class import="com.gmail.sleepy771.workcount.diff.numbers.NumberManager" as="NumberManager"/>
+        <class import="java.lang.Boolean" as="Boolean"/>
+        <instance class="NumberManager" obtain-instance="getInstance" as="nm"/>
+    </instances>
+    <define>
+        <for-class value="java.lang.String">
+            <parameter-types>
+                <parameter-type>java.lang.String</parameter-type>
+            </parameter-types>
+            <values>
+                <value>""</value>
+            </values>
+        </for-class>
+        <for-class value="java.lang.Byte">
+            <parameter-types>
+                <parameter-type>java.lang.Byte</parameter-type>
+            </parameter-types>
+            <values>
+                <value class-instance="nm" invoke="readFromString">0</value>
+            </values>
+        </for-class>
+        <for-class value="Boolean">
+            <parameter-types>
+                <parameter-type>Boolean</parameter-type>
+            </parameter-types>
+            <values>
+                <value class="Boolean" invoke-static="parseValue">FALSE</value>
+            </values>
+        </for-class>
+        <for-class value="java.lang.Short">
+            <parameter-types>
+                <parameter-type>java.lang.Short</parameter-type>
+            </parameter-types>
+            <values>
+                <value class-instance="nm" invoke="readFromString">0</value>
+            </values>
+        </for-class>
+        <for-class value="java.lang.Integer">
+            <parameter-types>
+                <parameter-type>java.lang.Integer</parameter-type>
+            </parameter-types>
+            <values>
+                <value class-instance="nm" invoke="readFromString">0</value>
+            </values>
+        </for-class>
+        <for-class value="java.lang.Long">
+            <parameter-types>
+                <parameter-type>java.lang.Long</parameter-type>
+            </parameter-types>
+            <values>
+                <value class-instance="nm" invoke="readFromString">0L</value>
+            </values>
+        </for-class>
+        <for-class value="java.lang.Float">
+            <parameter-types>
+                <parameter-type>java.lang.Float</parameter-type>
+            </parameter-types>
+            <values>
+                <value class-instance="nm" invoke="readFromString">0.f</value>
+            </values>
+        </for-class>
+        <for-class value="java.lang.Double">
+            <parameter-types>
+                <parameter-type>java.lang.Double</parameter-type>
+            </parameter-types>
+            <values>
+                <value class-instance="nm" invoke="readFromString">0.</value>
+            </values>
+        </for-class>
+    </define>
+</defualtvalues>

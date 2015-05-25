@@ -30,7 +30,7 @@ public interface Scheme extends Classy {
 
     List<Class<? extends Patchable>> listPatchableClasses();
 
-    boolean hasMethod(Signature siganture);
+    boolean hasMethod(Signature signature);
 
     boolean hasSetter(Signature signature);
 
