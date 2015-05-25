@@ -24,8 +24,12 @@ public class XMLHandler {
         FOR_CLASS_OVERRIDE("for-class", 2, true, true, OVERRIDE),
         EXCLUDE_INHERIT("exclude-class", 2, false, true, INHERIT),
         INCLUDE_INHERIT("include-class", 2, false, true, INHERIT),
+        PARAMETER_TYPES("parameter-types", 3, true, true, FOR_CLASS),
+        PARAMETER_TYPES_OVERRIDE("parameter-types", 3, true, true, FOR_CLASS_OVERRIDE),
         VALUES("values", 3, true, true, FOR_CLASS),
         VALUES_OVERRIDE("values", 3, true, true, FOR_CLASS_OVERRIDE),
+        PARAMETER_TYPE("parameter-type", 4, true, false, PARAMETER_TYPES),
+        PARAMETER_TYPE_OVERRIDE("parameter-type", 4, true, false, PARAMETER_TYPES_OVERRIDE),
         VALUE("value", 4, true, true, VALUES),
         VALUE_OVERRIDE("value", 4, true, true, VALUES_OVERRIDE);
 
@@ -135,13 +139,25 @@ public class XMLHandler {
         INHERIT_AMOUNT("amount", false, Tag.INHERIT, "some,none,all"),
         INHERIT_FROM("from", true, Tag.INHERIT, "-"),
         INCLUDE_CLASS("class", true, Tag.INCLUDE_INHERIT, "-"),
+        INCLUDE_CLASS_ID("id", true, Tag.INCLUDE_INHERIT, "-"),
         EXCLUDE_CLASS("class", true, Tag.EXCLUDE_INHERIT, "-"),
+        EXCLUDE_CLASS_ID("id", true, Tag.EXCLUDE_INHERIT, "-"),
         DEFINE_FOR_CLASS_VALUE("value", true, Tag.FOR_CLASS, "-"),
+        DEFINE_PARAMETER_TYPE_ID("id", true, Tag.PARAMETER_TYPE, "-"),
+        DEFINE_PARAMETER_TYPE_VALUE("value", true, Tag.PARAMETER_TYPE, "-"),
+        DEFINE_VALUE_ID("id", true, Tag.VALUE, "-"),
         DEFINE_VALUE_CLASS_INSTANCE("class-instance", false, Tag.VALUE, "-"),
         DEFINE_VALUE_INVOKE("invoke", false, Tag.VALUE, "-"),
+        DEFINE_VALUE_CLASS("class", false, Tag.VALUE, "-"),
+        DEFINE_VALUE_INVOKE_STATIC("invoke-static", false, Tag.VALUE, "-"),
         OVERRIDE_FOR_CLASS_VALUE("value", true, Tag.FOR_CLASS_OVERRIDE, "-"),
+        OVERRIDE_PARAMETER_TYPE_ID("id", true, Tag.PARAMETER_TYPE_OVERRIDE, "-"),
+        OVERRIDE_PARAMETER_TYPE_VALUE("value", true, Tag.PARAMETER_TYPE_OVERRIDE, "-"),
+        OVERRIDE_VALUE_ID("id", true, Tag.VALUE, "-"),
         OVERRIDE_VALUE_CLASS_INSTANCE("class-instance", false, Tag.VALUE_OVERRIDE, "-"),
-        OVERRIDE_VALUE_INVOKE("invoke", false, Tag.VALUE_OVERRIDE, "-");
+        OVERRIDE_VALUE_INVOKE("invoke", false, Tag.VALUE_OVERRIDE, "-"),
+        OVERRIDE_VALUE_CLASS("class", false, Tag.VALUE, "-"),
+        OVERRIDE_VALUE_INVOKE_STATIC("invoke-static", false, Tag.VALUE, "-");
 
         private final String attributeName;
         private final boolean obligatory;

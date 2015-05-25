@@ -3,7 +3,7 @@
     <instances>
         <class import="com.gmail.sleepy771.workcount.diff.numbers.NumberManager" as="NumberManager"/>
         <class import="java.lang.Boolean" as="Boolean"/>
-        <instance class="NumberManager" obtain-instance="getInstance" as="nm"/>
+        <instance class="NumberManager" obtain-instance="getInstance" ref="nm"/>
     </instances>
     <inherit amount="some,all,none" from="path/to/parent/defaults.xml">
         <include-class class="com.gmail.sleepy771.workcount.diff.sample.SimpleDiffObject" /> <!-- usable with #some, #none -->
@@ -12,76 +12,86 @@
     <define>
         <for-class value="java.lang.String">
             <parameter-types>
-                <parameter-type>java.lang.String</parameter-type>
+                <parameter-type id="0" value="java.lang.String"/>
             </parameter-types>
             <values>
-                <value>""</value>
+                <value id="0" blank="true,false" on-empty="null,empty,zero,false"/> <!-- TODO add blank [false, true] and on-empty [null, empty, zero, false] -->
             </values>
         </for-class>
         <for-class value="java.lang.Byte">
             <parameter-types>
-                <parameter-type>java.lang.Byte</parameter-type>
+                <parameter-type id="0" value="java.lang.Byte"/>
             </parameter-types>
             <values>
-                <value class-instance="nm" invoke="readFromString">0</value>
+                <value id="0" class-instance="@nm" invoke="readFromString">0</value>
             </values>
         </for-class>
         <for-class value="Boolean">
             <parameter-types>
-                <parameter-type>Boolean</parameter-type>
+                <parameter-type id="0" value="Boolean"/>
             </parameter-types>
             <values>
-                <value class="Boolean" invoke-static="parseValue">FALSE</value>
+                <value id="0" class="Boolean" invoke-static="parseValue">FALSE</value>
             </values>
         </for-class>
         <for-class value="java.lang.Short">
             <parameter-types>
-                <parameter-type>java.lang.Short</parameter-type>
+                <parameter-type id="0" value="java.lang.Short"/>
             </parameter-types>
             <values>
-                <value class-instance="nm" invoke="readFromString">0</value>
+                <value id="0" class-instance="@nm" invoke="readFromString">0</value>
             </values>
         </for-class>
         <for-class value="java.lang.Integer">
             <parameter-types>
-                <parameter-type>java.lang.Integer</parameter-type>
+                <parameter-type id="0" value="java.lang.Integer"/>
             </parameter-types>
             <values>
-                <value class-instance="nm" invoke="readFromString">0</value>
+                <value id="0" class-instance="@nm" invoke="readFromString">0</value>
             </values>
         </for-class>
         <for-class value="java.lang.Long">
             <parameter-types>
-                <parameter-type>java.lang.Long</parameter-type>
+                <parameter-type id="0" value="java.lang.Long"/>
             </parameter-types>
             <values>
-                <value class-instance="nm" invoke="readFromString">0L</value>
+                <value id="0" class-instance="@nm" invoke="readFromString">0L</value>
             </values>
         </for-class>
         <for-class value="java.lang.Float">
             <parameter-types>
-                <parameter-type>java.lang.Float</parameter-type>
+                <parameter-type id="0" value="java.lang.Float"/>
             </parameter-types>
             <values>
-                <value class-instance="nm" invoke="readFromString">0.f</value>
+                <value id="0" class-instance="@nm" invoke="readFromString">0.f</value>
             </values>
         </for-class>
         <for-class value="java.lang.Double">
             <parameter-types>
-                <parameter-type>java.lang.Double</parameter-type>
+                <parameter-type id="0" value="java.lang.Double"/>
             </parameter-types>
             <values>
-                <value class-instance="nm" invoke="readFromString">0.</value>
+                <value id="0" class-instance="@nm" invoke="readFromString">0.</value>
             </values>
         </for-class>
     </define>
     <override>
-        <for-class value="java.util.List">
+        <for-class value="java.util.List" ref="the_list"> <!-- add ref attribute -->
             <parameter-types>
-                <parameter-type>java.lang.String</parameter-type>
+                <parameter-type id="0" value="int.class"/>
             </parameter-types>
             <values>
-                <value>defualt</value>
+                <value id="0" class-instance="@nm" invoke="readFromStrine">12</value>
+            </values>
+        </for-class>
+        <for-class value="com.gmail.sleepy771.workcount.diff.scheme.Scheme">
+            <parameter-types>
+                <parameter-type id="0" value="java.lang.String"/>
+                <parameter-type id="1" value="java.util.List"/>
+            </parameter-types>
+            <values>
+                <value id="0">SomethingDefault</value>
+                <value id="1" link="@the_list"/> <!-- add link attribute -->
             </values>
         </for-class>
     </override>
