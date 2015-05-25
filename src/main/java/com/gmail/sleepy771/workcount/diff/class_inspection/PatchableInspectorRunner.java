@@ -10,9 +10,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by filip on 5/24/15.
@@ -58,13 +58,7 @@ public class PatchableInspectorRunner {
                 }
             }
         }
-        Set<SetterBinder> bounds = new HashSet<>();
-
-        for (SetterBinder.Builder boundBuilder : builderMap.values()) {
-            if (boundBuilder.isBuildable()) {
-                bounds.add(boundBuilder.build());
-            }
-        }
+        Set<SetterBinder> bounds = builderMap.values().stream().filter(SetterBinder.Builder::isBuildable).map(SetterBinder.Builder::build).collect(Collectors.toSet());
     }
 
     public void searchAccessibleID() throws IdException {

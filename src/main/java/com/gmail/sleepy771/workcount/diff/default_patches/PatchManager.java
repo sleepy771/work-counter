@@ -24,13 +24,6 @@ public class PatchManager extends AbstractManager<Class, Class<? extends Patch>>
 
     @Override
     protected void populate(Map<Class, Class<? extends Patch>> map) {
-        map.put(String.class, StringPatch.class);
-        map.put(Byte.class, NumberPatch.class);
-        map.put(Short.class, NumberPatch.class);
-        map.put(Integer.class, NumberPatch.class);
-        map.put(Long.class, NumberPatch.class);
-        map.put(Double.class, NumberPatch.class);
-        map.put(Float.class, NumberPatch.class);
     }
 
     @Override
