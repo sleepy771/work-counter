@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:attribute name="class">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="as">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="reference">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="id">
+        <xs:simpleType>
+            <xs:restriction base="xs:integer">
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="instance">
+        <xs:simpleType>
+            <xs:restriction base="xs:string"/>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="invoke">
+        <xs:simpleType>
+            <xs:restriction base="xs:string"/>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="invoke-static">
+        <xs:simpleType>
+            <xs:restriction base="xs:string"/>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="blank">
+        <xs:simpleType>
+            <xs:restriction base="xs:boolean"/>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="amount">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="all"/>
+                <xs:enumeration value="none"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="on-empty">
+        <xs:simpleType>
+            <xs:list>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="null"/>
+                        <xs:enumeration value="zero"/>
+                        <xs:enumeration value="blank"/>
+                        <xs:enumeration value="false"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:list>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="value">
+        <xs:simpleType>
+            <xs:restriction base="xs:string"/>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="file-path">
+        <xs:simpleType>
+            <xs:restriction base="xs:string"/>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attributeGroup name="static-call">
+        <xs:attribute ref="class" use="required"/>
+        <xs:attribute ref="invoke-static" use="required"/>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="instance-call">
+        <xs:attribute ref="instance" use="required"/>
+        <xs:attribute ref="invoke" use="required"/>
+    </xs:attributeGroup>
+    <xs:complexType name="abstract_valueElement" abstract="true">
+        <xs:attribute ref="id" use="required"/>
+        <xs:attribute ref="on-empty" use="optional"/>
+        <xs:attribute ref="blank" use="optional"/>
+    </xs:complexType>
+    <xs:element name="parameter-types">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="parameter-type" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute ref="id" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="values">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="value" type="abstract_valueElement" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="abstract_instanceElement" abstract="true">
+        <xs:sequence>
+            <xs:element ref="parameter-types" maxOccurs="1"/>
+            <xs:element ref="values" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute ref="reference" use="required"/>
+    </xs:complexType>
+    <xs:element name="for-class">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="parameter-types" maxOccurs="1"/>
+                <xs:element ref="values" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute ref="value"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="default-values">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" name="inherit">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="include-class">
+                                <xs:complexType>
+                                    <xs:attribute ref="class" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="exclude-class">
+                                <xs:complexType>
+                                    <xs:attribute ref="class" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute ref="file-path" use="required"/>
+                        <xs:attribute ref="amount" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="imports">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="import">
+                                <xs:complexType>
+                                    <xs:attribute ref="class"/>
+                                    <xs:attribute ref="as"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element maxOccurs="1" name="instances">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="instance" type="abstract_instanceElement" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="define" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="for-class"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="override" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="for-class"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="static-call">
+        <xs:complexContent>
+            <xs:extension base="abstract_valueElement">
+                <xs:attributeGroup ref="static-call"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="instance-call">
+        <xs:complexContent>
+            <xs:extension base="abstract_valueElement">
+                <xs:attributeGroup ref="instance-call"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="none-call">
+        <xs:complexContent>
+            <xs:extension base="abstract_valueElement"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="obtain-static">
+        <xs:complexContent>
+            <xs:extension base="abstract_instanceElement">
+                <xs:attributeGroup ref="static-call"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="obtain-instance">
+        <xs:complexContent>
+            <xs:extension base="abstract_instanceElement">
+                <xs:attributeGroup ref="instance-call"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>
