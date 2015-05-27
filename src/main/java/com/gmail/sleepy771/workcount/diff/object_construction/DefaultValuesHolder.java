@@ -6,7 +6,7 @@ import com.gmail.sleepy771.workcount.diff.reflection.Classy;
  * Created by filip on 5/25/15.
  */
 public interface DefaultValuesHolder extends Classy {
-    Class[] parameterTypes();
+    Class[] getParameterTypes();
 
     Object[] getDefaultValues();
 }

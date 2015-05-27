@@ -16,7 +16,7 @@ public class XMLValuesHolder implements DefaultValuesHolder {
     }
 
     @Override
-    public Class[] parameterTypes() {
+    public Class[] getParameterTypes() {
         return parameterTypes;
     }
 

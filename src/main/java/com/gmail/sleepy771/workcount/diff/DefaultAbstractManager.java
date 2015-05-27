@@ -17,11 +17,23 @@ public abstract class DefaultAbstractManager<R, T> extends AbstractManager<R, T>
 
     @Override
     public final T get(R key) throws ManagerException {
+        if (!containsKey(key))
+            throw new ManagerException("Key not present");
         return getDirectly(key);
     }
 
     @Override
     public final T remove(R key) throws ManagerException {
+        if (!containsKey(key))
+            throw new ManagerException("Key not present");
         return removeDirectly(key);
+    }
+
+    @Override
+    protected final void postRelease(R key, T element) {
+    }
+
+    @Override
+    protected final void postRegistration(R key, T element) {
     }
 }

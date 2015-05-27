@@ -2,6 +2,7 @@ package com.gmail.sleepy771.workcount.diff.default_patches;
 
 import com.gmail.sleepy771.workcount.Manager;
 import com.gmail.sleepy771.workcount.diff.AbstractManager;
+import com.gmail.sleepy771.workcount.diff.DefaultAbstractManager;
 import com.gmail.sleepy771.workcount.diff.annotations.ForClass;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 import com.gmail.sleepy771.workcount.diff.patchers.StringDeltaPatcher;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * Created by filip on 5/22/15.
  */
-public class DeltaManager extends AbstractManager<Class, Class<? extends Delta>> implements Manager<Class, Class<? extends Delta>> {
+public class DeltaManager extends DefaultAbstractManager<Class, Class<? extends Delta>> implements Manager<Class, Class<? extends Delta>> {
     @Override
     protected Class getKeyFromElement(Class<? extends Delta> element) throws ManagerException {
         ForClass forClass = element.getAnnotation(ForClass.class);
@@ -29,20 +30,5 @@ public class DeltaManager extends AbstractManager<Class, Class<? extends Delta>>
         map.put(Float.class, NumberDelta.class);
         map.put(Double.class, NumberDelta.class);
         map.put(String.class, StringDelta.class);
-    }
-
-    @Override
-    public boolean isRegisteredForKey(Class key) {
-        return containsKey(key);
-    }
-
-    @Override
-    public Class<? extends Delta> get(Class key) throws ManagerException {
-        return getDirectly(key);
-    }
-
-    @Override
-    public Class<? extends Delta> remove(Class key) throws ManagerException {
-        return removeDirectly(key);
     }
 }

@@ -2,13 +2,14 @@ package com.gmail.sleepy771.workcount.diff;
 
 import com.gmail.sleepy771.workcount.Manager;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
+import com.gmail.sleepy771.workcount.registers.Registrable;
 
 import java.util.*;
 
 /**
  * Created by filip on 8.5.2015.
  */
-public abstract class AbstractManager<R, T> implements Manager<R, T> {
+public abstract class AbstractManager<R, T extends Registrable<R>> implements Manager<R, T> {
     private Map<R, T> managerMap;
 
     public AbstractManager() {
@@ -32,21 +33,23 @@ public abstract class AbstractManager<R, T> implements Manager<R, T> {
         } else {
             managerMap.put(key, element);
         }
+        postRegistration(element);
     }
 
     @Override
     public final void register(T element) throws ManagerException {
-        register(getKeyFromElement(element), element);
+        register(element.getKey(), element);
     }
 
     @Override
-    public final void unregister(T element) throws ManagerException {
-        managerMap.remove(getKeyFromElement(element), element);
+    public final void unregister(T element) {
+        managerMap.remove(element.getKey(), element);
+        postRelease(element);
     }
 
     @Override
-    public final boolean isRegistered(T element) throws ManagerException {
-        return managerMap.containsKey(getKeyFromElement(element)) && managerMap.get(getKeyFromElement(element)).equals(element);
+    public final boolean isRegistered(T element) {
+        return managerMap.containsKey(element.getKey()) && managerMap.get(element.getKey()).equals(element);
     }
 
     @Override
@@ -89,11 +92,17 @@ public abstract class AbstractManager<R, T> implements Manager<R, T> {
         return managerMap.remove(key);
     }
 
+    protected final void clear() {
+        managerMap.clear();
+    }
+
     protected Map<R, T> getManagerMap() {
         return Collections.unmodifiableMap(managerMap);
     }
 
-    protected abstract R getKeyFromElement(T element) throws ManagerException;
-
     protected abstract void populate(Map<R, T> map);
+
+    protected abstract void postRegistration(T element);
+
+    protected abstract  void postRelease(T element);
 }
