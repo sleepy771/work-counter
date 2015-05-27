@@ -34,7 +34,7 @@ public class XMLAttributeSchemeImpl implements XMLAttributeScheme {
     }
 
     public XMLAttributeSchemeImpl(String attributeName, boolean isObligatory) {
-        this(attributeName, isObligatory, (Collection<String>) null, null);
+        this(attributeName, isObligatory, null, null);
     }
 
     @Override

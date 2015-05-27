@@ -8,5 +8,5 @@ import com.gmail.sleepy771.workcount.ReleasableManager;
 public interface Releasable {
     void free();
 
-    void setRegistrationManager(ReleasableManager r);
+    void setReleasableManager(ReleasableManager r);
 }

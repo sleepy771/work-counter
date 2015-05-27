@@ -86,9 +86,7 @@ public class DefaultValuesLoaderXML {
 
     public void performLoad() {
         try (FileReader fileReader = new FileReader(xmlFile)) {
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+//TODO implement
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,5 @@
 package com.gmail.sleepy771.workcount.diff.annotations;
 
-import com.gmail.sleepy771.workcount.diff.DefaultPatchable;
 import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
 import com.gmail.sleepy771.workcount.diff.default_patchables.SimplePatchable;
 

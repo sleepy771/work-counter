@@ -39,6 +39,7 @@ public class ObjectPatcher extends AbstractPatcher implements Patcher, Classy {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Patchable patch(Patchable original, Patch patch) throws PatcherException {
         scheme.isValid(patch);
         scheme.isValid(original);
@@ -54,6 +55,7 @@ public class ObjectPatcher extends AbstractPatcher implements Patcher, Classy {
                     if (patch.isPatch(signature)) {
                         if (!patcherManager.isRegisteredForKey(signature.getReturnType())) {
                             // atempt to run ClassInspector
+                            // TODO fire Inspection event on class [Signature::getReturnType]
                         }
                         Patcher patcher = patcherManager.get(signature.getReturnType());
                         Patchable originalInnerObjectPatchable = new SimplePatchable(original.getID(), original.getVersion(), value);

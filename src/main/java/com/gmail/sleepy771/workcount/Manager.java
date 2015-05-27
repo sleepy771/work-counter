@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Created by filip on 5.5.2015.
  */
-public interface Manager<R, T extends Registrable<R>> extends Iterable<Map.Entry<R, T>>{
+public interface Manager<R, T> extends Iterable<Map.Entry<R, T>>{
     void register(R key, T element) throws ManagerException;
 
     void register(T element) throws ManagerException;

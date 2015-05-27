@@ -203,12 +203,7 @@ public class XMLHandler {
 
     private void registerTags() throws ManagerException {
         List<Tag> sortedList = new ArrayList<>(Arrays.asList(Tag.values()));
-        sortedList.sort(new Comparator<Tag>() {
-            @Override
-            public int compare(Tag o1, Tag o2) {
-                return o1.level - o2.level;
-            }
-        });
+        sortedList.sort((o1, o2) -> o1.level - o2.level);
         for (Tag tag : sortedList) {
             if (null != tag.parent) {
                 XMLTagScheme scheme = createScheme(tag, null);

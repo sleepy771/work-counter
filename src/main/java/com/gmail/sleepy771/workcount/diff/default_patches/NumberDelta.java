@@ -20,7 +20,7 @@ public class NumberDelta implements Delta<Number> {
     }
 
     public boolean equals(Object o) {
-        return delta.equals(o);
+        return Delta.class.isInstance(o) && delta.equals(o);
     }
 
     @Override

@@ -3,8 +3,6 @@ package com.gmail.sleepy771.workcount.diff;
 import com.gmail.sleepy771.workcount.Manager;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 
-import java.util.Map;
-
 /**
  * Created by filip on 5/25/15.
  */
@@ -18,22 +16,24 @@ public abstract class DefaultAbstractManager<R, T> extends AbstractManager<R, T>
     @Override
     public final T get(R key) throws ManagerException {
         if (!containsKey(key))
-            throw new ManagerException("Key not present");
+            throw new ManagerException("Key not found!");
         return getDirectly(key);
     }
 
     @Override
-    public final T remove(R key) throws ManagerException {
-        if (!containsKey(key))
-            throw new ManagerException("Key not present");
+    public final T remove(R key) {
         return removeDirectly(key);
     }
 
     @Override
-    protected final void postRelease(R key, T element) {
+    protected void postRegistration(R key, T element) {
     }
 
     @Override
-    protected final void postRegistration(R key, T element) {
+    protected void postRelease(R key, T element) {
+    }
+
+    @Override
+    protected void populate() {
     }
 }

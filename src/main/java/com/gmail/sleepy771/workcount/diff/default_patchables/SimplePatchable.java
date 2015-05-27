@@ -1,6 +1,5 @@
 package com.gmail.sleepy771.workcount.diff.default_patchables;
 
-import com.gmail.sleepy771.workcount.diff.HasID;
 import com.gmail.sleepy771.workcount.diff.Identificator;
 
 /**
@@ -27,9 +26,7 @@ public class SimplePatchable extends PatchableBase implements Patchable {
 
     @Override
     protected boolean compareObject(Patchable obj) {
-        if (!SimplePatchable.class.equals(obj.getClass()))
-            return false;
-        return ((SimplePatchable) obj).getValue().equals(value);
+        return SimplePatchable.class.equals(obj.getClass()) && obj.getValue().equals(value);
     }
 
     @Override

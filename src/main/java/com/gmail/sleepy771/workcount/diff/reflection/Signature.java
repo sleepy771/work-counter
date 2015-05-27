@@ -75,6 +75,7 @@ public class Signature {
         return parameters;
     }
 
+    @SuppressWarnings("unchecked")
     public Method getMethod() throws NoSuchMethodException {
         if ("".equals(methodName))
             throw new NoSuchMethodException("Signature is for object only");

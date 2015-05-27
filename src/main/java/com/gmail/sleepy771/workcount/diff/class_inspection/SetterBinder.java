@@ -4,7 +4,6 @@ import com.gmail.sleepy771.workcount.diff.annotations.PropertyType;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

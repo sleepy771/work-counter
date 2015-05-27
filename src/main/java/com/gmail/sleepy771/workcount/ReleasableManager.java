@@ -1,11 +1,8 @@
 package com.gmail.sleepy771.workcount;
 
 import com.gmail.sleepy771.workcount.diff.AbstractManager;
-import com.gmail.sleepy771.workcount.diff.DefaultAbstractManager;
 import com.gmail.sleepy771.workcount.diff.Releasable;
 import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
-
-import java.util.Map;
 
 /**
  * Created by filip on 5/27/15.
@@ -17,23 +14,18 @@ public class ReleasableManager extends AbstractManager<Class, Releasable> implem
     private ReleasableManager manager = null;
 
     @Override
-    protected Class getKeyFromElement(Releasable element) throws ManagerException {
-        return element.getClass();
-    }
-
-    @Override
-    protected void populate(Map<Class, Releasable> map) {
-        map.put(getClass(), this);
-    }
-
-    @Override
     protected void postRegistration(Class key, Releasable element) {
-        element.setRegistrationManager(this);
+        element.setReleasableManager(this);
     }
 
     @Override
     protected void postRelease(Class key, Releasable element) {
-        element.setRegistrationManager(null);
+        element.setReleasableManager(null);
+    }
+
+    @Override
+    protected Class getKeyForElement(Releasable element) {
+        return element.getClass();
     }
 
     @Override
@@ -60,7 +52,7 @@ public class ReleasableManager extends AbstractManager<Class, Releasable> implem
     }
 
     @Override
-    public void setRegistrationManager(ReleasableManager r) {
+    public void setReleasableManager(ReleasableManager r) {
         this.manager = r;
     }
 
@@ -77,9 +69,7 @@ public class ReleasableManager extends AbstractManager<Class, Releasable> implem
     }
 
     @Override
-    public Releasable remove(Class key) throws ManagerException {
-        if (!containsKey(key))
-            throw new ManagerException("Key not registered");
+    public Releasable remove(Class key) {
         return removeDirectly(key);
     }
 
@@ -92,5 +82,10 @@ public class ReleasableManager extends AbstractManager<Class, Releasable> implem
 
     public boolean isRunningManager() {
         return this == INSTANCE;
+    }
+
+    @Override
+    protected void populate() {
+        registerSilently(this);
     }
 }

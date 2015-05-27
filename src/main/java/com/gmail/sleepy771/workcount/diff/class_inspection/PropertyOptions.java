@@ -77,6 +77,7 @@ public class PropertyOptions {
         return property.type() == PropertyType.SETTER;
     }
 
+    @SuppressWarnings("unchecked")
     public void invokeSet(Object patchedObject, Object value) throws IllegalAccessException, InstantiationException, InvocationTargetException {
         if (!isSetter())
             throw new UnsupportedOperationException("This operation is not supported for non setter methods");
@@ -84,6 +85,7 @@ public class PropertyOptions {
         method.invoke(patchedObject, handler.prepare(value));
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T invokeGet(Object originalObject) throws IllegalAccessException, InstantiationException, InvocationTargetException {
         if (!isGetter())
             throw new UnsupportedOperationException("This operation is not supported for non getter methods");
