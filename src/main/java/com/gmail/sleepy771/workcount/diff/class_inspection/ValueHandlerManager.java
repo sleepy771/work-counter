@@ -1,26 +1,33 @@
 package com.gmail.sleepy771.workcount.diff.class_inspection;
 
-import com.gmail.sleepy771.workcount.ReleasableManager;
-import com.gmail.sleepy771.workcount.diff.DefaultAbstractManager;
-import com.gmail.sleepy771.workcount.diff.Releasable;
+import com.gmail.sleepy771.workcount.diff.SelfDereferenceManager;
 import com.gmail.sleepy771.workcount.diff.ValueHandler;
-import com.gmail.sleepy771.workcount.diff.exceptions.ManagerException;
 
 /**
- * Created by filip on 6/1/15.
+ * Created by filip on 6/5/15.
  */
-public class ValueHandlerManager extends DefaultAbstractManager<Class<? extends ValueHandler>, ValueHandler> implements Releasable {
+public class ValueHandlerManager extends SelfDereferenceManager<Class<? extends ValueHandler>, ValueHandler> {
 
-    private static ReleasableReference<ValueHandlerManager> INSTANCE = new ReleasableReference<>();
+    private static ValueHandlerManager INSTANCE = null;
 
-    private ReleasableManager releasableManager;
-
-    private ValueHandlerManager() {
-        super();
-        if (ValueHandlerManager.INSTANCE != null) {
-            INSTANCE.free();
+    public ValueHandlerManager() {
+        if (INSTANCE != null) {
+            clear();
+            INSTANCE = null;
         }
-        ValueHandlerManager.INSTANCE.set(this);
+        ValueHandlerManager.INSTANCE = this;
+    }
+
+    @Override
+    protected void postRegister(Class<? extends ValueHandler> key, ValueHandler element) {
+    }
+
+    @Override
+    protected void postUnregister(Class<? extends ValueHandler> key, ValueHandler element) {
+    }
+
+    @Override
+    protected void populate() {
     }
 
     @Override
@@ -28,38 +35,18 @@ public class ValueHandlerManager extends DefaultAbstractManager<Class<? extends 
         return element.getClass();
     }
 
-    @Override
-    public void free() {
-        clear();
-        INSTANCE.release(this);
-        if (releasableManager != null)
-            releasableManager.unregister(this);
-    }
-
-    public ValueHandler getHandler(Class<? extends ValueHandler> valueHandlerClass) throws IllegalAccessException, InstantiationException {
-        if (!isRegisteredForKey(valueHandlerClass)) {
-            ValueHandler handler = valueHandlerClass.newInstance();
-            registerSilently(handler);
+    public ValueHandler getHandler(Class<? extends ValueHandler> handlerClass) throws IllegalAccessException, InstantiationException {
+        if (!isRegisteredForKey(handlerClass)) {
+            ValueHandler handler = handlerClass.newInstance();
+            putSilently(handlerClass, handler);
         }
-        return getDirectly(valueHandlerClass);
-    }
-
-    @Override
-    public void setReleasableManager(ReleasableManager r) {
-        this.releasableManager = r;
+        return getDirectly(handlerClass);
     }
 
     public static ValueHandlerManager getInstance() {
-        if (INSTANCE.isNull()) {
+        if (INSTANCE == null) {
             return new ValueHandlerManager();
         }
-        return INSTANCE.get();
-    }
-
-    public static ValueHandlerManager newInstance() {
-        if (!INSTANCE.isNull()) {
-            INSTANCE.free();
-        }
-        return new ValueHandlerManager();
+        return INSTANCE;
     }
 }

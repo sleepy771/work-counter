@@ -51,6 +51,19 @@ public abstract class SelfDereferenceManager<R, T> implements Manager<R, T> {
 
     protected abstract R getKeyForElement(T element);
 
+    protected T getDirectly(R key) {
+        return managerMapping.get(key).get();
+    }
+
+    protected void putSilently(R key, T element) {
+        if (!isRegisteredForKey(key))
+            managerMapping.put(key, new WeakReference<T>(element));
+    }
+
+    protected void clear() {
+        managerMapping.clear();
+    }
+
     @Override
     public void register(T element) throws ManagerException {
         register(getKeyForElement(element), element);
