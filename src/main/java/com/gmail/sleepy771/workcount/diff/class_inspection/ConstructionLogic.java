@@ -15,4 +15,12 @@ public class ConstructionLogic {
         return false;
     }
 
+    public boolean needsInject() {
+        return false;
+    }
+
+    public Class[] preferedConstructor() {
+        return new Class[0];
+    }
+
 }

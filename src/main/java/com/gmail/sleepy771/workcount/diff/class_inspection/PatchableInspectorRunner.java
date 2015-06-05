@@ -1,93 +1,159 @@
 package com.gmail.sleepy771.workcount.diff.class_inspection;
 
-import com.gmail.sleepy771.workcount.diff.annotations.*;
-import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
-import com.gmail.sleepy771.workcount.diff.exceptions.IdException;
+import com.gmail.sleepy771.workcount.diff.AsSelf;
+import com.gmail.sleepy771.workcount.diff.DoNuttinHandler;
+import com.gmail.sleepy771.workcount.diff.ValueHandler;
+import com.gmail.sleepy771.workcount.diff.annotations.InjectConstructorArguments;
+import com.gmail.sleepy771.workcount.diff.annotations.Property;
+import com.gmail.sleepy771.workcount.diff.annotations.PropertyType;
+import com.gmail.sleepy771.workcount.diff.class_inspection.PropertyParams.Builder;
+import com.gmail.sleepy771.workcount.diff.exceptions.FieldPropertyException;
+import com.gmail.sleepy771.workcount.diff.exceptions.InvalidPatchableClassException;
 import com.gmail.sleepy771.workcount.diff.reflection.Signature;
+import com.gmail.sleepy771.workcount.diff.scheme.Scheme;
 
+import java.io.InvalidClassException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by filip on 5/24/15.
  */
-public class PatchableInspectorRunner {
+public class PatchableInspectorRunner implements PatchableInspector {
 
-    private final Class<? extends Patchable> patchableType;
+    private final Class clazz;
 
-    private final Class classForPatch;
+    private boolean inspected = false;
 
-    private boolean hasZeroArgumentConstructor = false;
+    private ValueHandlerManager valueManager;
 
-    private boolean needsInjection = false;
+    private Map<String, PropertyParams> properties;
 
-    private ConstructionLogic constructionLogick;
+    private Map<String, FieldProperty> fieldPropertyMap;
+
+    private Constructor constructor;
+
+    private InjectConstructorArguments args;
+
+    private boolean hasArgumentLessConstructor;
 
     public PatchableInspectorRunner(Class clazz) {
-        CanPatch canPatch = (CanPatch) clazz.getAnnotation(CanPatch.class);
-        if (canPatch == null)
-            throw new IllegalArgumentException("Wrong class type");
-        patchableType = canPatch.asPatchable();
-        classForPatch = clazz;
+        this.clazz = clazz;
     }
 
-    public void inspectConstructors() {
-        for (Constructor constructor : classForPatch.getConstructors()) {
-            hasZeroArgumentConstructor |= constructor.getParameterCount() == 0;
-            if (constructor.getAnnotation(InjectConstructorArguments.class) != null)
-                needsInjection = true;
-        }
+
+    @Override
+    public void runInspection() {
+        if (isInspected())
+            return;
+
+        inspected = true;
     }
 
-    public void inspectMethods() {
-        Map<Signature, PropertyOptions> optionsMap = new HashMap<>();
-        Map<String, SetterBinder.Builder> builderMap = new HashMap<>();
-        for (Method method : classForPatch.getMethods()) {
+    @Override
+    public boolean isInspected() {
+        return inspected;
+    }
+
+    @Override
+    public boolean isValid() {
+        return false;
+    }
+
+    @Override
+    public Scheme getScheme() {
+        return null;
+    }
+
+    @Override
+    public Class getForClass() {
+        return this.clazz;
+    }
+
+    private void inspectProperties() throws IllegalAccessException, InstantiationException {
+        Map<String, PropertyParams.Builder> paramsBuilders = new HashMap<>();
+        for (Method method : clazz.getMethods()) {
             Property property = method.getAnnotation(Property.class);
-            if (property != null && property.type() == PropertyType.GETTER) {
-                PropertyOptions options = new PropertyOptions(method, property);
-                optionsMap.put(new Signature(method), options);
-                if (builderMap.containsKey(options.getPropertyName())) {
-                    builderMap.get(options.getPropertyName()).bindTo(options);
+            if (property != null) {
+                String propertyName = property.type().getPropertyName(method.getName(), property.propertyName());
+                if (paramsBuilders.containsKey(propertyName)) {
+                    paramsBuilders.get(propertyName).bind(property, method);
+                } else {
+                    paramsBuilders.put(propertyName, new Builder(valueManager, property, method));
                 }
             }
         }
-        Set<SetterBinder> bounds = builderMap.values().stream().filter(SetterBinder.Builder::isBuildable).map(SetterBinder.Builder::build).collect(Collectors.toSet());
+        Map<String, PropertyParams> paramsMap = new HashMap<>();
+        for (PropertyParams.Builder builder : paramsBuilders.values()) {
+            PropertyParams params = builder.build();
+            paramsMap.put(params.getPropertyName(), params);
+        }
+        properties = Collections.unmodifiableMap(paramsMap);
     }
 
-    public void searchAccessibleID() throws IdException {
-        Method idMethod = null;
-        Field idField = null;
-        for (Method method : classForPatch.getMethods()) {
-            if (method.getAnnotation(ID.class) != null && isAccessibleIDMethod(method)) {
-                if (idMethod != null)
-                    throw new IdException("Multiple id's found");
-                idMethod = method;
+    private void inspectConstructors() throws InvalidPatchableClassException {
+        constructor = null;
+        this.args = null;
+        hasArgumentLessConstructor = false;
+        for (Constructor constructor : clazz.getConstructors()) {
+            InjectConstructorArguments injectConstructorArguments = (InjectConstructorArguments) constructor.getAnnotation(InjectConstructorArguments.class);
+            if (injectConstructorArguments != null) {
+                if (args == null && this.constructor == null) {
+                    args = injectConstructorArguments;
+                    this.constructor = constructor;
+                } else {
+                    throw new InvalidPatchableClassException(clazz, "Too many annotations");
+                }
+                if (constructor.getParameterCount() == 0) {
+                    hasArgumentLessConstructor = true;
+                    if (args == null) {
+                        this.constructor = constructor;
+                    }
+                }
             }
         }
-        for (Field field : classForPatch.getFields()) {
-            if (field.getAnnotation(ID.class) != null  && isAccessibleIDField(field)) {
-                if (idMethod != null || idField != null)
-                    throw new IdException("Multiple id's found");
-                idField = field;
+    }
+
+    private void inspectFields() throws FieldPropertyException {
+        Map<String, FieldProperty> fieldPropertyMap = new HashMap<>();
+        for (Field field : clazz.getFields()) {
+            Property property = field.getAnnotation(Property.class);
+            if (property != null) {
+                if (property.type() != PropertyType.FIELD)
+                    throw new FieldPropertyException(field.getName(), "Invalid property type: " + property.type() + ", but " + PropertyType.FIELD + " was expected!");
+                if (!Modifier.isPublic(field.getModifiers()))
+                    throw new FieldPropertyException(property.type().getPropertyName(field.getName(), property.propertyName()), "Field is not Public");
+                if (property.patchAs() == AsSelf.class) {
+                    String propertyName = property.type().getPropertyName(field.getName(), property.propertyName());
+                    fieldPropertyMap.put(propertyName, new FieldProperty(propertyName, field.getType()));
+                } else {
+                    String propertyName = property.type().getPropertyName(field.getName(), property.propertyName());
+                    ValueHandler toTypeHandler = null;
+                    ValueHandler fromTypeHandler = null;
+                    try {
+                        if (property.fromTypeHandlerClass() != DoNuttinHandler.class) {
+                            fromTypeHandler = valueManager.getHandler(property.fromTypeHandlerClass());
+                        }
+                        if (property.toTypeHandlerClass() != DoNuttinHandler.class) {
+                            toTypeHandler = valueManager.getHandler(property.toTypeHandlerClass());
+                        }
+                    } catch (IllegalAccessException | InstantiationException e) {
+                        throw new FieldPropertyException(propertyName, e);
+                    }
+                    fieldPropertyMap.put(propertyName,
+                            new FieldProperty(propertyName, field.getType(), property.patchAs(), fromTypeHandler, toTypeHandler));
+                }
             }
         }
-
-        if (idMethod == null && idField == null)
-            throw new IdException("No Id was found");
+        this.fieldPropertyMap = Collections.unmodifiableMap(fieldPropertyMap);
     }
 
-    public boolean isAccessibleIDMethod(Method method) {
-        return !(Modifier.isFinal(method.getModifiers()) || Modifier.isStatic(method.getModifiers())) && (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers()));
-    }
-
-    public boolean isAccessibleIDField(Field field) {
-        return !(Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) && Modifier.isPublic(field.getModifiers());
+    private void inspectClass(Class clazz) {
+        // TODO this will add class to InspectionQueue
     }
 }

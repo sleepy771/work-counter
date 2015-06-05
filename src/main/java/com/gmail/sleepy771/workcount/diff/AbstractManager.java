@@ -9,10 +9,16 @@ import java.util.*;
  * Created by filip on 8.5.2015.
  */
 public abstract class AbstractManager<R, T> implements Manager<R, T> {
-    private Map<R, T> managerMap;
+    private final Map<R, T> managerMap;
 
     public AbstractManager() {
         managerMap = new HashMap<>();
+        populate();
+    }
+
+    protected AbstractManager(Map<R, T> map) {
+        managerMap = map;
+        managerMap.clear();
         populate();
     }
 

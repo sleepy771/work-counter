@@ -17,7 +17,8 @@ public enum PropertyType {
         } else {
             return methodName;
         }
-    });
+    }),
+    FIELD((fieldName, propertyName) -> fieldName);
 
     private final PropertyNameHandler handler;
 

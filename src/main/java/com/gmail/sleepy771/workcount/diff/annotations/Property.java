@@ -1,9 +1,8 @@
 package com.gmail.sleepy771.workcount.diff.annotations;
 
-import com.gmail.sleepy771.workcount.diff.DefaultPatchable;
+import com.gmail.sleepy771.workcount.diff.AsSelf;
 import com.gmail.sleepy771.workcount.diff.DoNuttinHandler;
-import com.gmail.sleepy771.workcount.diff.PreProcessHandler;
-import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
+import com.gmail.sleepy771.workcount.diff.ValueHandler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,9 +21,13 @@ public @interface Property {
 
     PropertyType type() default PropertyType.GETTER;
 
-    Class<? extends PreProcessHandler> preProcessingClass() default DoNuttinHandler.class;
+    Class<? extends ValueHandler> fromTypeHandlerClass() default DoNuttinHandler.class;
 
-    Class<? extends Patchable> patchAs() default DefaultPatchable.class;
+    Class<? extends ValueHandler> toTypeHandlerClass() default DoNuttinHandler.class;
 
-    boolean needsInspection() default false;
+    Class<? extends ValueHandler> valueHandlerClass() default DoNuttinHandler.class;
+
+    Class patchAs() default AsSelf.class;
+
+    Class setAs() default AsSelf.class;
 }

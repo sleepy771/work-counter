@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
  */
 public class Signature {
 
+    public static final String CONSTRUCTOR = "#CONSTRUCTOR";
+
     private final String methodName;
     private final Class[] arguments;
     private final Class returnType;
@@ -15,6 +17,10 @@ public class Signature {
 
     public Signature(Class type) {
         this(type, "", new Class[0], type);
+    }
+
+    public Signature(Class clazz, Class[] parameters) {
+        this(clazz, CONSTRUCTOR, parameters, clazz);
     }
 
     public Signature(Method method) {

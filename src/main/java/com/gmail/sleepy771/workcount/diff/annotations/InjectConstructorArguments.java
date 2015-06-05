@@ -11,4 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.CONSTRUCTOR)
 public @interface InjectConstructorArguments {
+    String injectionFile() default "-";
+
+    String constructorSignature() default "-";
 }
