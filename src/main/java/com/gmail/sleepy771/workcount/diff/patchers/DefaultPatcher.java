@@ -6,7 +6,7 @@ import com.gmail.sleepy771.workcount.diff.default_patches.Delta;
 import com.gmail.sleepy771.workcount.diff.default_patches.InstancePatch;
 import com.gmail.sleepy771.workcount.diff.default_patches.Patch;
 import com.gmail.sleepy771.workcount.diff.exceptions.PatcherException;
-import com.gmail.sleepy771.workcount.diff.reflection.Signature;
+import com.gmail.sleepy771.workcount.diff.reflection.MethodSignature;
 
 /**
  * Created by filip on 5/23/15.
@@ -27,7 +27,7 @@ public class DefaultPatcher extends AbstractPatcher implements Patcher {
     public Patchable patch(Patchable original, Patch patch) throws PatcherException {
         validateIds(original, patch);
         validateFromVersion(original, patch);
-        Object patched = deltaPatcher.patch(original.getValue(), patch.getDeltaFor(new Signature(original.getForClass())));
+        Object patched = deltaPatcher.patch(original.getValue(), patch.getDeltaFor(new MethodSignature(original.getForClass())));
         return new SimplePatchable(original.getID(), patch.getToVersion(), patched);
     }
 
@@ -40,7 +40,7 @@ public class DefaultPatcher extends AbstractPatcher implements Patcher {
 
     @Override
     public Patch invert(Patch patch) throws PatcherException {
-        Delta delta = deltaPatcher.invert(patch.getDeltaFor(new Signature(patch.getForClass())));
+        Delta delta = deltaPatcher.invert(patch.getDeltaFor(new MethodSignature(patch.getForClass())));
         return new InstancePatch(patch.getID(), patch.getToVersion(), patch.getFromVersion(), patch.getForClass(), delta);
     }
 }

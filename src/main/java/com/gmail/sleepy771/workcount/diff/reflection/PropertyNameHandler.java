@@ -1,4 +1,4 @@
-package com.gmail.sleepy771.workcount.diff.annotations;
+package com.gmail.sleepy771.workcount.diff.reflection;
 
 /**
  * Created by filip on 5/25/15.

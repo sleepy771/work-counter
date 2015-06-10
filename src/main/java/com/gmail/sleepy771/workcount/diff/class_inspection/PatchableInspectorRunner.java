@@ -4,15 +4,13 @@ import com.gmail.sleepy771.workcount.diff.AsSelf;
 import com.gmail.sleepy771.workcount.diff.DoNuttinHandler;
 import com.gmail.sleepy771.workcount.diff.ValueHandler;
 import com.gmail.sleepy771.workcount.diff.annotations.InjectConstructorArguments;
-import com.gmail.sleepy771.workcount.diff.annotations.Property;
-import com.gmail.sleepy771.workcount.diff.annotations.PropertyType;
+import com.gmail.sleepy771.workcount.diff.annotations.PatchProperty;
+import com.gmail.sleepy771.workcount.diff.reflection.PropertyType;
 import com.gmail.sleepy771.workcount.diff.class_inspection.PropertyParams.Builder;
 import com.gmail.sleepy771.workcount.diff.exceptions.FieldPropertyException;
 import com.gmail.sleepy771.workcount.diff.exceptions.InvalidPatchableClassException;
-import com.gmail.sleepy771.workcount.diff.reflection.Signature;
 import com.gmail.sleepy771.workcount.diff.scheme.Scheme;
 
-import java.io.InvalidClassException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -78,13 +76,13 @@ public class PatchableInspectorRunner implements PatchableInspector {
     private void inspectProperties() throws IllegalAccessException, InstantiationException {
         Map<String, PropertyParams.Builder> paramsBuilders = new HashMap<>();
         for (Method method : clazz.getMethods()) {
-            Property property = method.getAnnotation(Property.class);
-            if (property != null) {
-                String propertyName = property.type().getPropertyName(method.getName(), property.propertyName());
+            PatchProperty patchProperty = method.getAnnotation(PatchProperty.class);
+            if (patchProperty != null) {
+                String propertyName = patchProperty.type().getPropertyName(method.getName(), patchProperty.name());
                 if (paramsBuilders.containsKey(propertyName)) {
-                    paramsBuilders.get(propertyName).bind(property, method);
+                    paramsBuilders.get(propertyName).bind(patchProperty, method);
                 } else {
-                    paramsBuilders.put(propertyName, new Builder(valueManager, property, method));
+                    paramsBuilders.put(propertyName, new Builder(valueManager, patchProperty, method));
                 }
             }
         }
@@ -122,31 +120,31 @@ public class PatchableInspectorRunner implements PatchableInspector {
     private void inspectFields() throws FieldPropertyException {
         Map<String, FieldProperty> fieldPropertyMap = new HashMap<>();
         for (Field field : clazz.getFields()) {
-            Property property = field.getAnnotation(Property.class);
-            if (property != null) {
-                if (property.type() != PropertyType.FIELD)
-                    throw new FieldPropertyException(field.getName(), "Invalid property type: " + property.type() + ", but " + PropertyType.FIELD + " was expected!");
+            PatchProperty patchProperty = field.getAnnotation(PatchProperty.class);
+            if (patchProperty != null) {
+                if (patchProperty.type() != PropertyType.FIELD)
+                    throw new FieldPropertyException(field.getName(), "Invalid patchProperty type: " + patchProperty.type() + ", but " + PropertyType.FIELD + " was expected!");
                 if (!Modifier.isPublic(field.getModifiers()))
-                    throw new FieldPropertyException(property.type().getPropertyName(field.getName(), property.propertyName()), "Field is not Public");
-                if (property.patchAs() == AsSelf.class) {
-                    String propertyName = property.type().getPropertyName(field.getName(), property.propertyName());
+                    throw new FieldPropertyException(patchProperty.type().getPropertyName(field.getName(), patchProperty.name()), "Field is not Public");
+                if (patchProperty.patchAs() == AsSelf.class) {
+                    String propertyName = patchProperty.type().getPropertyName(field.getName(), patchProperty.name());
                     fieldPropertyMap.put(propertyName, new FieldProperty(propertyName, field.getType()));
                 } else {
-                    String propertyName = property.type().getPropertyName(field.getName(), property.propertyName());
+                    String propertyName = patchProperty.type().getPropertyName(field.getName(), patchProperty.name());
                     ValueHandler toTypeHandler = null;
                     ValueHandler fromTypeHandler = null;
                     try {
-                        if (property.fromTypeHandlerClass() != DoNuttinHandler.class) {
-                            fromTypeHandler = valueManager.getHandler(property.fromTypeHandlerClass());
+                        if (patchProperty.fromTypeHandlerClass() != DoNuttinHandler.class) {
+                            fromTypeHandler = valueManager.getHandler(patchProperty.fromTypeHandlerClass());
                         }
-                        if (property.toTypeHandlerClass() != DoNuttinHandler.class) {
-                            toTypeHandler = valueManager.getHandler(property.toTypeHandlerClass());
+                        if (patchProperty.toTypeHandlerClass() != DoNuttinHandler.class) {
+                            toTypeHandler = valueManager.getHandler(patchProperty.toTypeHandlerClass());
                         }
                     } catch (IllegalAccessException | InstantiationException e) {
                         throw new FieldPropertyException(propertyName, e);
                     }
                     fieldPropertyMap.put(propertyName,
-                            new FieldProperty(propertyName, field.getType(), property.patchAs(), fromTypeHandler, toTypeHandler));
+                            new FieldProperty(propertyName, field.getType(), patchProperty.patchAs(), fromTypeHandler, toTypeHandler));
                 }
             }
         }

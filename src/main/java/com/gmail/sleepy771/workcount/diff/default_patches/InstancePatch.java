@@ -1,7 +1,7 @@
 package com.gmail.sleepy771.workcount.diff.default_patches;
 
 import com.gmail.sleepy771.workcount.diff.Identificator;
-import com.gmail.sleepy771.workcount.diff.reflection.Signature;
+import com.gmail.sleepy771.workcount.diff.reflection.MethodSignature;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -13,38 +13,38 @@ import java.util.NoSuchElementException;
 public class InstancePatch extends PatchBase implements Patch {
 
     private final Delta delta;
-    private final Signature signature;
+    private final MethodSignature methodSignature;
 
     public InstancePatch(Identificator id, int fromVersion, int toVersion, Class forClass, Delta delta) {
         super(id, fromVersion, toVersion);
-        signature = new Signature(forClass);
+        methodSignature = new MethodSignature(forClass);
         this.delta = delta;
     }
 
     @Override
-    public Delta getDeltaFor(Signature signature) throws IllegalArgumentException {
-        if (this.signature.equals(signature))
+    public Delta getDeltaFor(MethodSignature methodSignature) throws IllegalArgumentException {
+        if (this.methodSignature.equals(methodSignature))
             return delta;
         throw new NoSuchElementException("Element not found");
     }
 
     @Override
-    public boolean hasDeltaFor(Signature signature) {
-        return this.signature.equals(signature);
+    public boolean hasDeltaFor(MethodSignature methodSignature) {
+        return this.methodSignature.equals(methodSignature);
     }
 
     @Override
-    public boolean isPatch(Signature signature) {
+    public boolean isPatch(MethodSignature methodSignature) {
         return false;
     }
 
     @Override
     protected boolean hasEqualDeltas(Patch p) {
-        Iterator<Map.Entry<Signature, Delta>> it1 = iterator();
-        Iterator<Map.Entry<Signature, Delta>> it2 = p.iterator();
+        Iterator<Map.Entry<MethodSignature, Delta>> it1 = iterator();
+        Iterator<Map.Entry<MethodSignature, Delta>> it2 = p.iterator();
         while (it1.hasNext() && it2.hasNext()) {
-            Map.Entry<Signature, Delta> o1 = it1.next();
-            Map.Entry<Signature, Delta> o2 = it2.next();
+            Map.Entry<MethodSignature, Delta> o1 = it1.next();
+            Map.Entry<MethodSignature, Delta> o2 = it2.next();
             if (o1 == null ? o2 != null : !(o1.getKey().equals(o2.getKey()) && o1.getValue().equals(o2.getValue())))
                 return false;
         }
@@ -53,21 +53,21 @@ public class InstancePatch extends PatchBase implements Patch {
 
     @Override
     protected int computeHash(int initSeed) {
-        initSeed += signature.hashCode();
+        initSeed += methodSignature.hashCode();
         initSeed = initSeed * 31 + delta.hashCode();
         return initSeed;
     }
 
     @Override
-    public Iterator<Map.Entry<Signature, Delta>> iterator() {
-        return new Iterator<Map.Entry<Signature, Delta>>() {
+    public Iterator<Map.Entry<MethodSignature, Delta>> iterator() {
+        return new Iterator<Map.Entry<MethodSignature, Delta>>() {
 
-            private Map.Entry<Signature, Delta> entry = new Map.Entry<Signature, Delta>() {
+            private Map.Entry<MethodSignature, Delta> entry = new Map.Entry<MethodSignature, Delta>() {
                 private final Delta delta = InstancePatch.this.delta;
-                private final Signature signature = InstancePatch.this.signature;
+                private final MethodSignature methodSignature = InstancePatch.this.methodSignature;
                 @Override
-                public Signature getKey() {
-                    return signature;
+                public MethodSignature getKey() {
+                    return methodSignature;
                 }
 
                 @Override
@@ -87,7 +87,7 @@ public class InstancePatch extends PatchBase implements Patch {
             }
 
             @Override
-            public Map.Entry<Signature, Delta> next() {
+            public Map.Entry<MethodSignature, Delta> next() {
                 if (entry == null)
                     throw new NoSuchElementException();
                 try {
@@ -101,7 +101,7 @@ public class InstancePatch extends PatchBase implements Patch {
 
     @Override
     public Class getForClass() {
-        return signature.getReturnType();
+        return methodSignature.getType();
     }
 
     @Override

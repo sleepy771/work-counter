@@ -1,17 +1,12 @@
 package com.gmail.sleepy771.workcount.diff.class_inspection;
 
-import com.gmail.sleepy771.workcount.diff.DoNuttinHandler;
+import com.gmail.sleepy771.workcount.diff.AsSelf;
 import com.gmail.sleepy771.workcount.diff.ValueHandler;
-import com.gmail.sleepy771.workcount.diff.annotations.Property;
-import com.gmail.sleepy771.workcount.diff.annotations.PropertyType;
-import com.gmail.sleepy771.workcount.diff.default_patches.MapPatch;
-import com.gmail.sleepy771.workcount.diff.default_patches.MapPatch.Builder;
-import com.gmail.sleepy771.workcount.diff.reflection.Signature;
+import com.gmail.sleepy771.workcount.diff.annotations.PatchProperty;
+import com.gmail.sleepy771.workcount.diff.reflection.PropertyType;
+import com.gmail.sleepy771.workcount.diff.reflection.MethodSignature;
 
-import javax.xml.bind.ValidationEvent;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -20,73 +15,49 @@ import java.util.Map;
 public class PropertyParams {
 
     public static class Builder {
-
         private String propertyName;
 
-        private Map<PropertyType, Signature> signatureMap;
+        private Map<PropertyType, MethodSignature> signatureMap;
 
-        private Map<PropertyType, Class<? extends ValueHandler>> handlers;
+        private Map<PropertyType, ValueHandler> handlerMap;
 
-        private Property property;
+        private Class patchAs;
 
-        private ValueHandlerManager valueManager;
+        private Map<PropertyType, Class> type;
 
-        public Builder(ValueHandlerManager valueManager, Property property, Method method) {
-            this.valueManager = valueManager;
-            this.property = property;
-            this.propertyName = extractName(property, method);
-            this.signatureMap = new HashMap<>();
-            this.handlers = new HashMap<>();
-            signatureMap.put(property.type(), new Signature(method));
-            handlers.put(property.type(), property.valueHandlerClass());
+        public Builder(String propertyName) {
+            this.propertyName = propertyName;
         }
 
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        public Map<PropertyType, Signature> getSignatureMap() {
-            return Collections.unmodifiableMap(signatureMap);
-        }
-
-        public PropertyParams.Builder bind(Property property, Method method) {
-            if (signatureMap.containsKey(property.type())) {
-                throw new IllegalArgumentException();
-            }
-            if (!extractName(property, method).equals(propertyName)) {
-                throw new IllegalArgumentException();
-            }
-            signatureMap.put(property.type(), new Signature(method));
+        public Builder setValueHandler(PropertyType type, ValueHandler valueHandler) {
+            if (this.signatureMap.containsKey(type))
+                return null;
             return this;
         }
 
-        public boolean isPrepared() {
-            return signatureMap.containsKey(PropertyType.GETTER);
-        }
-
-        public static String extractName(Property property, Method method) {
-            return property.type().getPropertyName(method.getName(), property.propertyName());
-        }
-
-        public PropertyParams build() throws InstantiationException, IllegalAccessException {
-            if (!isPrepared())
+        public Builder addAccessor(PatchProperty patchProperty, Method method) {
+            if (signatureMap.containsKey(patchProperty.type()))
                 throw new IllegalArgumentException();
-            boolean hasSetter = signatureMap.containsKey(PropertyType.SETTER);
-            Class<? extends ValueHandler> getterHandlerClass = handlers.getOrDefault(PropertyType.GETTER, DoNuttinHandler.class);
-            Class<? extends ValueHandler> setterHandlerClass = handlers.getOrDefault(PropertyType.SETTER, DoNuttinHandler.class);
-            ValueHandler getterHandler = null;
-            ValueHandler setterHandler = null;
-            if (getterHandlerClass != null && !DoNuttinHandler.class.equals(getterHandlerClass)) {
-                getterHandler = valueManager.getHandler(getterHandlerClass);
+            if (this.patchAs != null) {
+                if (patchProperty.patchAs() != AsSelf.class) {
+                    if (this.patchAs != patchProperty.patchAs())
+                        throw new IllegalArgumentException(); // Invalid Annotation
+                } else {
+                    if (this.patchAs != method.getReturnType()) {
+                        throw new IllegalArgumentException(); //
+                    }
+                }
+            } else {
+                this.patchAs = method.getReturnType();
+                if (patchProperty.patchAs() != AsSelf.class) {
+                    this.patchAs = patchProperty.patchAs();
+                }
             }
-            if (setterHandlerClass != null && !DoNuttinHandler.class.equals(setterHandlerClass)) {
-                setterHandler = valueManager.getHandler(setterHandlerClass);
-            }
-            return new PropertyParams(propertyName, signatureMap.get(PropertyType.GETTER), signatureMap.get(PropertyType.SETTER), getterHandler, setterHandler);
+            return this;
         }
     }
 
-    private PropertyParams(String propertyName, Signature getter, Signature setter, ValueHandler getterHandler, ValueHandler setterHandler) {
+    private PropertyParams(String propertyName, MethodSignature getter, MethodSignature setter, ValueHandler getterHandler, ValueHandler setterHandler) {
 
     }
 
@@ -94,11 +65,11 @@ public class PropertyParams {
         return null;
     }
 
-    public Signature getGetter() {
+    public MethodSignature getGetter() {
         return null;
     }
 
-    public Signature getSetter() {
+    public MethodSignature getSetter() {
         return null;
     }
 

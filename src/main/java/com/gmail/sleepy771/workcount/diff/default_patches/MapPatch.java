@@ -2,7 +2,7 @@ package com.gmail.sleepy771.workcount.diff.default_patches;
 
 import com.gmail.sleepy771.workcount.diff.Identificator;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
-import com.gmail.sleepy771.workcount.diff.reflection.Signature;
+import com.gmail.sleepy771.workcount.diff.reflection.MethodSignature;
 import com.gmail.sleepy771.workcount.diff.scheme.Scheme;
 
 import java.util.*;
@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Created by filip on 5/17/15.
  */
-public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.Entry<Signature, Delta>> {
+public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.Entry<MethodSignature, Delta>> {
 
     @Override
     public Object getPatch() {
@@ -19,7 +19,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
 
     public static final class Builder {
 
-        private Map<Signature, Delta> patches;
+        private Map<MethodSignature, Delta> patches;
         private Identificator id;
         private int fromVersion, toVersion;
         private Class forClass;
@@ -45,28 +45,28 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
             this.manager = manager;
         }
 
-        public Builder putPatches(Map<Signature, Delta> patches) {
+        public Builder putPatches(Map<MethodSignature, Delta> patches) {
             this.patches.putAll(patches);
             return this;
         }
 
-        public Builder putPatch(Signature signature, Delta patch) {
-            patches.put(signature, patch);
+        public Builder putPatch(MethodSignature methodSignature, Delta patch) {
+            patches.put(methodSignature, patch);
             return this;
         }
 
-        public Builder setPatchMap(Map<Signature, Delta> patches) {
+        public Builder setPatchMap(Map<MethodSignature, Delta> patches) {
             this.patches = patches;
             return this;
         }
 
-        public Builder removePatch(Signature signature) {
-            patches.remove(signature);
+        public Builder removePatch(MethodSignature methodSignature) {
+            patches.remove(methodSignature);
             return this;
         }
 
-        public Builder removePatch(Signature signature, Delta patchObject) {
-            patches.remove(signature, patchObject);
+        public Builder removePatch(MethodSignature methodSignature, Delta patchObject) {
+            patches.remove(methodSignature, patchObject);
             return this;
         }
 
@@ -80,19 +80,19 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
             return this;
         }
 
-        public Object getPatch(Signature signature) {
-            return this.patches.get(signature);
+        public Object getPatch(MethodSignature methodSignature) {
+            return this.patches.get(methodSignature);
         }
 
-        public boolean hasPatch(Signature signature, Object patch) {
+        public boolean hasPatch(MethodSignature methodSignature, Object patch) {
             if (patch == null) {
-                return patches.containsKey(signature) && patches.get(signature) == null;
+                return patches.containsKey(methodSignature) && patches.get(methodSignature) == null;
             }
-            return patch.equals(patches.get(signature));
+            return patch.equals(patches.get(methodSignature));
         }
 
-        public boolean hasSignature(Signature signature) {
-            return patches.containsKey(signature);
+        public boolean hasSignature(MethodSignature methodSignature) {
+            return patches.containsKey(methodSignature);
         }
 
         private void validateVersions() {
@@ -146,10 +146,10 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
         }
     }
 
-    private final Map<Signature, Delta> patches;
+    private final Map<MethodSignature, Delta> patches;
     private final Class forClass;
 
-    private MapPatch(Class forClass, Identificator id, int fromVersion, int toVersion, Map<Signature, Delta> patches) {
+    private MapPatch(Class forClass, Identificator id, int fromVersion, int toVersion, Map<MethodSignature, Delta> patches) {
         super(id, fromVersion, toVersion);
         this.forClass = forClass;
         this.patches = Collections.unmodifiableMap(patches);
@@ -160,18 +160,18 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
         return forClass;
     }
 
-    public final boolean hasDeltaFor(Signature signature) {
-        return patches.containsKey(signature);
+    public final boolean hasDeltaFor(MethodSignature methodSignature) {
+        return patches.containsKey(methodSignature);
     }
 
     @Override
-    public boolean isPatch(Signature signature) {
+    public boolean isPatch(MethodSignature methodSignature) {
         return false;
     }
 
     @Override
-    public Delta getDeltaFor(Signature signature) throws IllegalArgumentException {
-        return patches.get(signature);
+    public Delta getDeltaFor(MethodSignature methodSignature) throws IllegalArgumentException {
+        return patches.get(methodSignature);
     }
 
     public final int getSize() {
@@ -182,9 +182,9 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
     protected boolean hasEqualDeltas(Patch p) {
         if (p.hashCode() != hashCode())
             return false;
-        Set<Signature> signatures = patches.keySet();
-        for (Signature signature : signatures) {
-            if (!(p.hasDeltaFor(signature) && patches.get(signature).equals(p.getDeltaFor(signature))))
+        Set<MethodSignature> methodSignatures = patches.keySet();
+        for (MethodSignature methodSignature : methodSignatures) {
+            if (!(p.hasDeltaFor(methodSignature) && patches.get(methodSignature).equals(p.getDeltaFor(methodSignature))))
                 return false;
         }
         return true;
@@ -192,7 +192,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
 
     @Override
     protected final int computeHash(int hash) {
-        for (Map.Entry<Signature, Delta> signatureObjectEntry : this) {
+        for (Map.Entry<MethodSignature, Delta> signatureObjectEntry : this) {
             hash = 31 * hash + signatureObjectEntry.getKey().hashCode();
             hash = 31 * hash + signatureObjectEntry.getValue().hashCode();
         }
@@ -200,16 +200,16 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
     }
 
     @Override
-    public final Iterator<Map.Entry<Signature, Delta>> iterator() {
-        return new Iterator<Map.Entry<Signature, Delta>>() {
-            private final Iterator<Map.Entry<Signature, Delta>> entrySetIterator = patches.entrySet().iterator();
+    public final Iterator<Map.Entry<MethodSignature, Delta>> iterator() {
+        return new Iterator<Map.Entry<MethodSignature, Delta>>() {
+            private final Iterator<Map.Entry<MethodSignature, Delta>> entrySetIterator = patches.entrySet().iterator();
             @Override
             public boolean hasNext() {
                 return entrySetIterator.hasNext();
             }
 
             @Override
-            public Map.Entry<Signature, Delta> next() {
+            public Map.Entry<MethodSignature, Delta> next() {
                 return entrySetIterator.next();
             }
         };

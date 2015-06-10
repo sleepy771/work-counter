@@ -4,7 +4,7 @@ import com.gmail.sleepy771.workcount.diff.default_patchables.Patchable;
 import com.gmail.sleepy771.workcount.diff.default_patches.Patch;
 import com.gmail.sleepy771.workcount.diff.patchers.Patcher;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
-import com.gmail.sleepy771.workcount.diff.reflection.Signature;
+import com.gmail.sleepy771.workcount.diff.reflection.MethodSignature;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -16,13 +16,13 @@ import java.util.Set;
  */
 public interface Scheme extends Classy {
 
-    Set<Signature> getPatchSignatures();
+    Set<MethodSignature> getPatchSignatures();
 
-    Set<Signature> getUnsettableProperties();
+    Set<MethodSignature> getUnsettableProperties();
 
-    Set<Signature> getSettableProperties();
+    Set<MethodSignature> getSettableProperties();
 
-    Map<Signature, Signature> getSetterSignatures();
+    Map<MethodSignature, MethodSignature> getSetterSignatures();
 
     List<Class<? extends Patch>> listPatchClasses();
 
@@ -30,9 +30,9 @@ public interface Scheme extends Classy {
 
     List<Class<? extends Patchable>> listPatchableClasses();
 
-    boolean hasMethod(Signature signature);
+    boolean hasMethod(MethodSignature methodSignature);
 
-    boolean hasSetter(Signature signature);
+    boolean hasSetter(MethodSignature methodSignature);
 
     boolean isValid(Patchable patchable);
 
@@ -48,13 +48,13 @@ public interface Scheme extends Classy {
 
     boolean hasUnsettableProperties();
 
-    Method getMethod(Signature signature) throws NoSuchMethodException;
+    Method getMethod(MethodSignature methodSignature) throws NoSuchMethodException;
 
-    Class<? extends Patcher> getPatcherClassForMethod(Signature signature);
+    Class<? extends Patcher> getPatcherClassForMethod(MethodSignature methodSignature);
 
-    Class<? extends Patch> getPatchClassForMethod(Signature signature);
+    Class<? extends Patch> getPatchClassForMethod(MethodSignature methodSignature);
 
-    Class<? extends Patchable> getPatchableClassForMethod(Signature signature);
+    Class<? extends Patchable> getPatchableClassForMethod(MethodSignature methodSignature);
 
     void invalidate();
 }

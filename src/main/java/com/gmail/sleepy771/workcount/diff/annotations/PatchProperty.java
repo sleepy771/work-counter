@@ -3,6 +3,7 @@ package com.gmail.sleepy771.workcount.diff.annotations;
 import com.gmail.sleepy771.workcount.diff.AsSelf;
 import com.gmail.sleepy771.workcount.diff.DoNuttinHandler;
 import com.gmail.sleepy771.workcount.diff.ValueHandler;
+import com.gmail.sleepy771.workcount.diff.reflection.PropertyType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -15,9 +16,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 
-public @interface Property {
+public @interface PatchProperty {
 
-    String propertyName() default "-";
+    String name() default "-";
 
     PropertyType type() default PropertyType.GETTER;
 
