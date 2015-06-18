@@ -28,6 +28,12 @@ public class PredefinedProperties {
         values.put(signature, value);
     }
 
+    public Object get(Signature signature) {
+        if (!values.containsKey(signature))
+            throw new IllegalArgumentException("Undefined property");
+        return values.get(signature);
+    }
+
     public Map<Signature, Object> getValues() {
         return Collections.unmodifiableMap(values);
     }
