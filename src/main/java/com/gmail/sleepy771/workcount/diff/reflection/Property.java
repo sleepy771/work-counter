@@ -1,18 +1,18 @@
 package com.gmail.sleepy771.workcount.diff.reflection;
 
-
 /**
- * Created by filip on 6/6/15.
+ * Created by filip on 6/19/15.
  */
-public interface Property<T extends Signature> {
+public interface Property extends Classy {
     String getName();
 
-    // Maybe this is useless
-    PropertyType getPropertyType();
-
-    Class getClassType();
+    Class getPropertyClass();
 
     PropertyAccessor getAccessor();
 
-    T getSignature();
+    Signature getPropertySignature();
+
+    boolean hasProperty(Object o);
+
+    boolean isValidObject(Object o);
 }

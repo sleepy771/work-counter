@@ -1,16 +1,12 @@
 package com.gmail.sleepy771.workcount.diff.reflection;
 
+
 /**
- * Created by filip on 6/7/15.
+ * Created by filip on 6/19/15.
  */
-public interface PropertyAccessor extends PropertyGetter, PropertySetter {
-    boolean isWriteAccessible();
+public interface PropertyAccessor extends PropertyGetter, PropertySetter, ForProperty {
 
-    void setPropertyGetter(PropertyGetter getter);
+    PropertyGetter getGetter();
 
-    void setPropertySetter(PropertySetter setter);
-
-    PropertyGetter getPropertyGetter();
-
-    PropertySetter getPropertySetter();
+    PropertySetter getSetter();
 }

@@ -3,7 +3,6 @@ package com.gmail.sleepy771.workcount.diff.class_inspection;
 import com.gmail.sleepy771.workcount.diff.AsSelf;
 import com.gmail.sleepy771.workcount.diff.ValueHandler;
 import com.gmail.sleepy771.workcount.diff.annotations.PatchProperty;
-import com.gmail.sleepy771.workcount.diff.reflection.PropertyType;
 import com.gmail.sleepy771.workcount.diff.reflection.MethodSignature;
 
 import java.lang.reflect.Method;

@@ -5,6 +5,7 @@ import com.gmail.sleepy771.workcount.diff.default_patches.Patch;
 import com.gmail.sleepy771.workcount.diff.patchers.Patcher;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.MethodSignature;
+import com.gmail.sleepy771.workcount.diff.reflection.Property;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -39,6 +40,8 @@ public interface Scheme extends Classy {
     boolean isValid(Patch patch);
 
     boolean isValid(Patcher patcher);
+
+    boolean isValidGetterProperty(Property property);
 
     boolean onlyProperties();
 

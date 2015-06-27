@@ -1,8 +1,5 @@
 package com.gmail.sleepy771.workcount.diff.class_inspection;
 
-import com.gmail.sleepy771.workcount.ReleasableManager;
-import com.gmail.sleepy771.workcount.diff.Releasable;
-
 /**
  * Created by filip on 6/1/15.
  */
@@ -46,7 +43,7 @@ public class ReleasableReference<T extends Releasable> implements Releasable {
     }
 
     @Override
-    public void setReleasableManager(ReleasableManager r) {
+    public void setReleasableManager(ReleasableManagerImpl r) {
         this.object.setReleasableManager(r);
     }
 }

@@ -5,4 +5,8 @@ package com.gmail.sleepy771.workcount.diff;
  */
 public interface ValueHandler<O, I> {
     O prepare(I input);
+
+    Class<O> getOutputClass();
+
+    Class<? extends I> getInputClass();
 }

@@ -11,15 +11,6 @@ import java.util.Map;
  */
 public class InspectorManager extends AbstractManager<Class, PatchableInspector> implements Manager<Class, PatchableInspector> {
     @Override
-    protected Class getKeyFromElement(PatchableInspector element) {
-        return element.getForClass();
-    }
-
-    @Override
-    protected void populate(Map<Class, PatchableInspector> map) {
-    }
-
-    @Override
     public boolean isRegisteredForKey(Class key) {
         return false;
     }
@@ -30,7 +21,27 @@ public class InspectorManager extends AbstractManager<Class, PatchableInspector>
     }
 
     @Override
-    public PatchableInspector remove(Class key) throws ManagerException {
-        return null;
+    public PatchableInspector remove(Class key) {
+        return removeDirectly(key);
+    }
+
+    @Override
+    protected void populate() {
+
+    }
+
+    @Override
+    protected void postRegistration(Class key, PatchableInspector element) {
+
+    }
+
+    @Override
+    protected void postRelease(Class key, PatchableInspector element) {
+
+    }
+
+    @Override
+    protected Class getKeyForElement(PatchableInspector element) {
+        return element.getForClass();
     }
 }

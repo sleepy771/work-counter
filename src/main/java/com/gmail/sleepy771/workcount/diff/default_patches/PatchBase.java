@@ -1,7 +1,7 @@
 package com.gmail.sleepy771.workcount.diff.default_patches;
 
 import com.gmail.sleepy771.workcount.diff.HasID;
-import com.gmail.sleepy771.workcount.diff.Identificator;
+import com.gmail.sleepy771.workcount.diff.Id;
 
 /**
  * Created by filip on 5/17/15.
@@ -10,10 +10,10 @@ public abstract class PatchBase implements Patch {
 
     private final int fromVersion;
     private final int toVersion;
-    private final Identificator id;
+    private final Id id;
     private volatile int hashCode;
 
-    public PatchBase(Identificator id, int fromVersion, int toVersion) {
+    public PatchBase(Id id, int fromVersion, int toVersion) {
         this.id = id;
         this.fromVersion = fromVersion;
         this.toVersion = toVersion;
@@ -30,7 +30,7 @@ public abstract class PatchBase implements Patch {
     }
 
     @Override
-    public final Identificator getID() {
+    public final Id getID() {
         return id;
     }
 

@@ -18,6 +18,10 @@ public class FieldSignature implements Signature {
         this.inClass = forClass;
     }
 
+    public FieldSignature(Field field) {
+        this(field.getName(), field.getType(), field.getDeclaringClass());
+    }
+
 
     public Class getType() {
         return type;

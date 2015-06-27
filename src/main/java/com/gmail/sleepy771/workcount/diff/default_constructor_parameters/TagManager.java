@@ -1,8 +1,6 @@
 package com.gmail.sleepy771.workcount.diff.default_constructor_parameters;
 
-import com.gmail.sleepy771.workcount.ReleasableManager;
 import com.gmail.sleepy771.workcount.diff.DefaultAbstractManager;
-import com.gmail.sleepy771.workcount.diff.Releasable;
 
 /**
  * Created by filip on 5/28/15.
@@ -10,7 +8,7 @@ import com.gmail.sleepy771.workcount.diff.Releasable;
 public class TagManager extends DefaultAbstractManager<String, InstanceTag>
         implements Releasable {
 
-    private ReleasableManager releasableManager;
+    private ReleasableManagerImpl releasableManagerImpl;
 
     @Override
     protected String getKeyForElement(InstanceTag element) {
@@ -21,11 +19,11 @@ public class TagManager extends DefaultAbstractManager<String, InstanceTag>
     public void free() {
         clear();
 
-        releasableManager.unregister(this);
+        releasableManagerImpl.unregister(this);
     }
 
     @Override
-    public void setReleasableManager(ReleasableManager r) {
-        releasableManager = r;
+    public void setReleasableManagerImpl(ReleasableManagerImpl r) {
+        releasableManagerImpl = r;
     }
 }

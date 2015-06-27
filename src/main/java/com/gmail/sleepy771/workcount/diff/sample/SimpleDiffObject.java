@@ -2,7 +2,6 @@ package com.gmail.sleepy771.workcount.diff.sample;
 
 import com.gmail.sleepy771.workcount.diff.annotations.CanPatch;
 import com.gmail.sleepy771.workcount.diff.annotations.PatchProperty;
-import com.gmail.sleepy771.workcount.diff.reflection.PropertyType;
 
 /**
  * Created by filip on 30.4.2015.

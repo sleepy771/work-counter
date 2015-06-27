@@ -1,6 +1,6 @@
 package com.gmail.sleepy771.workcount.diff.default_patches;
 
-import com.gmail.sleepy771.workcount.diff.Identificator;
+import com.gmail.sleepy771.workcount.diff.Id;
 import com.gmail.sleepy771.workcount.diff.reflection.Classy;
 import com.gmail.sleepy771.workcount.diff.reflection.MethodSignature;
 import com.gmail.sleepy771.workcount.diff.scheme.Scheme;
@@ -20,7 +20,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
     public static final class Builder {
 
         private Map<MethodSignature, Delta> patches;
-        private Identificator id;
+        private Id id;
         private int fromVersion, toVersion;
         private Class forClass;
 
@@ -32,11 +32,11 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
             putPatches(patch.patches);
         }
 
-        public Builder(Class forClass, Identificator id, Scheme manager) {
+        public Builder(Class forClass, Id id, Scheme manager) {
             this(forClass, id, 0, 1, manager);
         }
 
-        public Builder(Class forClass, Identificator id, int fromVersion, int toVersion, Scheme manager) {
+        public Builder(Class forClass, Id id, int fromVersion, int toVersion, Scheme manager) {
             patches = new HashMap<>();
             this.forClass = forClass;
             this.id = id;
@@ -110,7 +110,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
             return this;
         }
 
-        public Builder setId(Identificator id) {
+        public Builder setId(Id id) {
             this.id = id;
             return this;
         }
@@ -149,7 +149,7 @@ public class MapPatch extends PatchBase implements Patch, Classy, Iterable<Map.E
     private final Map<MethodSignature, Delta> patches;
     private final Class forClass;
 
-    private MapPatch(Class forClass, Identificator id, int fromVersion, int toVersion, Map<MethodSignature, Delta> patches) {
+    private MapPatch(Class forClass, Id id, int fromVersion, int toVersion, Map<MethodSignature, Delta> patches) {
         super(id, fromVersion, toVersion);
         this.forClass = forClass;
         this.patches = Collections.unmodifiableMap(patches);

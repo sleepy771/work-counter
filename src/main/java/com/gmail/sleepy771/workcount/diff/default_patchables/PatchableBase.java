@@ -1,18 +1,18 @@
 package com.gmail.sleepy771.workcount.diff.default_patchables;
 
 import com.gmail.sleepy771.workcount.diff.HasID;
-import com.gmail.sleepy771.workcount.diff.Identificator;
+import com.gmail.sleepy771.workcount.diff.Id;
 
 /**
  * Created by filip on 5/17/15.
  */
 public abstract class PatchableBase implements Patchable {
 
-    private final Identificator id;
+    private final Id id;
     private final int version;
     private volatile int hashCode;
 
-    public PatchableBase(Identificator id, int version) {
+    public PatchableBase(Id id, int version) {
         this.id = id;
         this.version = version;
     }
@@ -23,7 +23,7 @@ public abstract class PatchableBase implements Patchable {
     }
 
     @Override
-    public final Identificator getID() {
+    public final Id getID() {
         return id;
     }
 

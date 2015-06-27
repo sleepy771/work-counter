@@ -5,7 +5,6 @@ import com.gmail.sleepy771.workcount.diff.DoNuttinHandler;
 import com.gmail.sleepy771.workcount.diff.ValueHandler;
 import com.gmail.sleepy771.workcount.diff.annotations.InjectConstructorArguments;
 import com.gmail.sleepy771.workcount.diff.annotations.PatchProperty;
-import com.gmail.sleepy771.workcount.diff.reflection.PropertyType;
 import com.gmail.sleepy771.workcount.diff.class_inspection.PropertyParams.Builder;
 import com.gmail.sleepy771.workcount.diff.exceptions.FieldPropertyException;
 import com.gmail.sleepy771.workcount.diff.exceptions.InvalidPatchableClassException;

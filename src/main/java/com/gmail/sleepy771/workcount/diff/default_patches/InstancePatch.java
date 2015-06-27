@@ -1,6 +1,6 @@
 package com.gmail.sleepy771.workcount.diff.default_patches;
 
-import com.gmail.sleepy771.workcount.diff.Identificator;
+import com.gmail.sleepy771.workcount.diff.Id;
 import com.gmail.sleepy771.workcount.diff.reflection.MethodSignature;
 
 import java.util.Iterator;
@@ -15,7 +15,7 @@ public class InstancePatch extends PatchBase implements Patch {
     private final Delta delta;
     private final MethodSignature methodSignature;
 
-    public InstancePatch(Identificator id, int fromVersion, int toVersion, Class forClass, Delta delta) {
+    public InstancePatch(Id id, int fromVersion, int toVersion, Class forClass, Delta delta) {
         super(id, fromVersion, toVersion);
         methodSignature = new MethodSignature(forClass);
         this.delta = delta;
